@@ -1,0 +1,184 @@
+﻿@using Microsoft.AspNetCore.Antiforgery
+@model ChildFund.Features.CatalogContent.Variant.GenericVariant
+
+@{
+    var addToCartUrl = Url.Action("AddToCart", "DefaultCart") ?? "";
+    var miniCartDetailsUrl = Url.Action("MiniCartDetails", "DefaultCart") ?? "";
+}
+
+<article class="variant-page">
+    <header class="variant-header">
+        <h1 class="variant-title">
+            @(string.IsNullOrWhiteSpace(Model?.DisplayName) ? Model?.Name : Model?.DisplayName)
+        </h1>
+        <h2>@Model.Code</h2>
+    </header>
+
+    <!-- Include the header partial (seed with zero; JS will refresh on load and after add) -->
+    <div id="miniCartCountContainer">
+        @await Html.PartialAsync("~/Features/Shared/Views/Header/_HeaderCart.cshtml", new { ItemCount = 0 })
+    </div>
+
+    <section class="variant-actions">
+        <input type="hidden" id="variantCode" value="@Model?.Code" />
+        <label for="qty" class="qty-label">Qty</label>
+        <input id="qty" name="qty" type="number" min="1" value="1" class="qty-input" />
+        <button id="btnAddToCart" type="button" class="btn-add" aria-label="Add to cart">Add to cart</button>
+        <span id="addToCartMsg" role="status" aria-live="polite" class="msg"></span>
+        @Html.AntiForgeryToken()
+    </section>
+</article>
+
+<style>
+    .variant-actions {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        margin: 1rem 0;
+    }
+
+    .qty-input {
+        width: 4.5rem;
+        padding: .35rem .5rem;
+    }
+
+    .btn-add {
+        padding: .55rem .95rem;
+        border: 0;
+        border-radius: .5rem;
+        cursor: pointer;
+        background: #111;
+        color: #fff;
+    }
+
+        .btn-add[disabled] {
+            opacity: .65;
+            cursor: not-allowed;
+        }
+
+    .msg {
+        margin-left: .5rem;
+        font-size: .95rem;
+    }
+
+        .msg.ok {
+            color: #0a7a2a;
+        }
+
+        .msg.err {
+            color: #b00020;
+        }
+</style>
+
+<script>
+    (function () {
+        var btn = document.getElementById("btnAddToCart");
+        if (!btn) return;
+
+        var codeEl = document.getElementById("variantCode");
+        var qtyEl = document.getElementById("qty");
+        var msgEl = document.getElementById("addToCartMsg");
+        var container = document.getElementById("miniCartCountContainer");
+
+        // Server-generated URLs with fallbacks if Url.Action is empty
+        var addToCartUrl = "@addToCartUrl";
+        if (!addToCartUrl) addToCartUrl = "/DefaultCart/AddToCart";
+
+        var miniCartDetailsUrl = "@miniCartDetailsUrl";
+        if (!miniCartDetailsUrl) miniCartDetailsUrl = "/DefaultCart/MiniCartDetails";
+
+        function setMsg(text, ok) {
+            if (!msgEl) return;
+            msgEl.textContent = text || "";
+            msgEl.className = "msg " + (ok ? "ok" : "err");
+        }
+
+        function getToken() {
+            var i = document.querySelector("input[name='__RequestVerificationToken']");
+            return i ? i.value : "";
+        }
+
+        // Fetch & replace the partial that shows "Total items: X"
+        function refreshMiniCartCount() {
+            if (!container) return Promise.resolve();
+            return fetch(miniCartDetailsUrl, {
+                method: "GET",
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            })
+                .then(function (r) { return r.text(); })
+                .then(function (html) {
+                    // Expecting the partial body itself; replace container contents
+                    container.innerHTML = html;
+                })
+                .catch(function () { /* ignore errors, keep old value */ });
+        }
+
+        // Fallback local POST if header's DefaultCart helper is not available
+        function localAddToCart(code, quantity) {
+            var headers = {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest"
+            };
+            var token = getToken();
+            if (token) headers["RequestVerificationToken"] = token;
+
+            var payload = { code: code, quantity: quantity, requestFrom: "axios" };
+
+            return fetch(addToCartUrl, {
+                method: "POST",
+                headers: headers,
+                body: JSON.stringify(payload)
+            }).then(function (r) { return r.json(); });
+        }
+
+        // Initial load: show the real count
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", refreshMiniCartCount);
+        } else {
+            refreshMiniCartCount();
+        }
+
+        btn.addEventListener("click", function () {
+            var code = codeEl ? codeEl.value : "";
+            var qty = parseInt(qtyEl && qtyEl.value ? qtyEl.value : "1", 10);
+
+            if (!code || isNaN(qty) || qty <= 0) {
+                setMsg("Please enter a valid quantity.", false);
+                return;
+            }
+
+            btn.disabled = true;
+            setMsg("Adding...", true);
+
+            var addFn = (window.DefaultCart && typeof window.DefaultCart.add === "function")
+                ? window.DefaultCart.add
+                : localAddToCart;
+
+            addFn(code, qty)
+                .then(function (json) {
+                    // camelCase response from server: { statusCode, message, countItems, subTotal, errorMessage, ... }
+                    if (json && (json.statusCode === 1 || json.statusCode === 0)) {
+                        setMsg("Added to cart.", true);
+
+                        // Update the inline text immediately if present (no flicker)
+                        var bubble = container ? container.querySelector("[data-cart-count]") : null;
+                        if (bubble && typeof json.countItems === "number") {
+                            bubble.textContent = "Total items: " + json.countItems;
+                        }
+
+                        // Then refresh from server to stay canonical
+                        return refreshMiniCartCount();
+                    } else {
+                        var msg = (json && (json.message || json.errorMessage)) || "Could not add to cart.";
+                        setMsg(msg, false);
+                    }
+                })
+                .catch(function () {
+                    setMsg("Something went wrong. Please try again.", false);
+                })
+                .finally(function () {
+                    btn.disabled = false;
+                });
+        });
+    })();
+</script>

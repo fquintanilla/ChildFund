@@ -1,0 +1,23 @@
+﻿@model dynamic
+@{
+    var count = 0;
+    if (Model != null)
+    {
+        try
+        {
+            // Support common property names coming from your MiniCart model/JSON
+            count = (int)(
+                (Model?.ItemCount ?? 
+                 Model?.CountItems ?? 
+                 Model?.TotalItems ?? 0)
+            );
+        }
+        catch
+        {
+            // If casting from decimal/long/etc.
+            try { count = Convert.ToInt32(Model?.ItemCount ?? Model?.CountItems ?? Model?.TotalItems ?? 0); } catch {}
+        }
+    }
+}
+
+<span id="header-total-items" data-cart-count>Total items: @count</span>

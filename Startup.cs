@@ -1,5 +1,7 @@
+using ChildFund.Infrastructure.Cms.Users;
 using EPiServer.Cms.Shell;
 using EPiServer.Cms.UI.AspNetIdentity;
+using EPiServer.Data;
 using EPiServer.Scheduler;
 using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
@@ -9,26 +11,38 @@ using Mediachase.Commerce.Anonymous;
 
 namespace ChildFund;
 
-public class Startup
+public class Startup(
+    IWebHostEnvironment webHostingEnvironment,
+    IConfiguration configuration)
 {
-    private readonly IWebHostEnvironment _webHostingEnvironment;
-
-    public Startup(IWebHostEnvironment webHostingEnvironment)
-    {
-        _webHostingEnvironment = webHostingEnvironment;
-    }
-
     public void ConfigureServices(IServiceCollection services)
     {
-        if (_webHostingEnvironment.IsDevelopment())
+        if (webHostingEnvironment.IsDevelopment())
         {
-            AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(_webHostingEnvironment.ContentRootPath, "App_Data"));
+            AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(webHostingEnvironment.ContentRootPath, "App_Data"));
 
             services.Configure<SchedulerOptions>(options => options.Enabled = false);
         }
 
+        services.Configure<DataAccessOptions>(options => options.ConnectionStrings.Add(new ConnectionStringOptions
+        {
+            Name = "EPiServerDB",
+            ConnectionString = configuration.GetConnectionString("EPiServerDB")
+        }));
+
+        services.AddCmsAspNetIdentity<SiteUser>(o =>
+        {
+            if (string.IsNullOrEmpty(o.ConnectionStringOptions?.ConnectionString))
+            {
+                o.ConnectionStringOptions = new ConnectionStringOptions
+                {
+                    Name = "EPiServerDB",
+                    ConnectionString = configuration.GetConnectionString("EPiServerDB")
+                };
+            }
+        });
+
         services
-            .AddCmsAspNetIdentity<ApplicationUser>()
             .AddCommerce()
             .AddAdminUserRegistration()
             .AddEmbeddedLocalization<Startup>();
@@ -54,6 +68,9 @@ public class Startup
 
         app.UseEndpoints(endpoints =>
         {
+            endpoints.MapControllerRoute(name: "Default", pattern: "{controller}/{action}/{id?}");
+            endpoints.MapControllers();
+            endpoints.MapRazorPages();
             endpoints.MapContent();
         });
     }

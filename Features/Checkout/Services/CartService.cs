@@ -5,7 +5,6 @@ using Mediachase.Commerce.Inventory;
 using Mediachase.Commerce.Security;
 using System.Text;
 using ChildFund.Features.Checkout.ViewModels;
-using ChildFund.Features.Commerce.Extensions;
 using ChildFund.Features.NamedCarts;
 using ChildFund.Infrastructure.Commerce.Markets;
 using EPiServer.Commerce.Catalog.ContentTypes;
@@ -15,6 +14,7 @@ using EPiServer.Commerce.UI.Admin.Shipping.Internal;
 using EPiServer.Web;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Catalog;
+using ChildFund.Infrastructure.Commerce.Extensions;
 
 namespace ChildFund.Features.Checkout.Services
 {

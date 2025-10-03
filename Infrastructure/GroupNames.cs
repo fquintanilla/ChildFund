@@ -7,5 +7,8 @@ namespace ChildFund.Infrastructure
     {
         [Display(Name = "Content", Order = 510)]
         public const string Content = "Content";
+
+        [Display(Order = 520)]
+        public const string Commerce = "Commerce";
     }
 }
