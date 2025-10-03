@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using ChildFund.Infrastructure.Cms;
 using EPiServer.Web;
 
-namespace ChildFund.Features.Commerce.Variant
+namespace ChildFund.Features.Commerce.CatalogContent.Variant
 {
     [CatalogContentType(DisplayName = "Generic Variant", GUID = "cfcf83dc-26b4-406b-a4f1-bfb0c9788c67", Description = "Generic Variant Page type to display products.")]
     public class GenericVariant : VariationContent

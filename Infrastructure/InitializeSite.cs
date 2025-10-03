@@ -1,4 +1,7 @@
-﻿using ChildFund.Infrastructure.Commerce.Extensions;
+﻿using ChildFund.Features.Checkout.Services;
+using ChildFund.Infrastructure.Cms;
+using ChildFund.Infrastructure.Commerce.Extensions;
+using ChildFund.Infrastructure.Commerce.Markets;
 using EPiServer.Commerce.Internal.Migration;
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
@@ -10,6 +13,13 @@ namespace ChildFund.Infrastructure
     [ModuleDependency(typeof(ServiceContainerInitialization))]
     public class InitializeSite : IConfigurableModule
     {
+        public void ConfigureContainer(ServiceConfigurationContext context)
+        {
+            context.Services.AddTransient<ICookieService, CookieService>();
+            context.Services.AddSingleton<ICurrencyService, CurrencyService>();
+            context.Services.AddSingleton<ICartService, CartService>();
+        }
+
         public void Initialize(InitializationEngine context)
         {
             var manager = context.Locate.Advanced.GetInstance<MigrationManager>();
@@ -22,11 +32,6 @@ namespace ChildFund.Infrastructure
         }
 
         public void Uninitialize(InitializationEngine context)
-        {
-            
-        }
-
-        public void ConfigureContainer(ServiceConfigurationContext context)
         {
             
         }

@@ -23,8 +23,8 @@ namespace ChildFund.Features.Commerce.CatalogContent.Category
         //[CultureSpecific]
         //[AllowedTypes(new[] { typeof(BreadcrumbBlock) })]
         //[Display(Name = "Breadcrumb", GroupName = SystemTabNames.Content, Order = 10)]
+        //public virtual ContentReference BreadcrumbReference { get; set; }
 
-        public virtual ContentReference BreadcrumbReference { get; set; }
         [Searchable(false)]
         [Display(Name = "Page Title Text Color", GroupName = SystemTabNames.Content, Order = 20)]
         [ClientEditor(ClientEditingClass = "foundation/editors/ColorPicker")]
