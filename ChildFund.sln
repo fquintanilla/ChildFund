@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.36227.8
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChildFund", "ChildFund.csproj", "{A61C7309-8BF6-4BE5-958D-056783A9E560}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A61C7309-8BF6-4BE5-958D-056783A9E560}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A61C7309-8BF6-4BE5-958D-056783A9E560}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A61C7309-8BF6-4BE5-958D-056783A9E560}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A61C7309-8BF6-4BE5-958D-056783A9E560}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E34AF1FF-E6CC-4841-B26B-9C589F72674A}
+	EndGlobalSection
+EndGlobal
