@@ -1,13 +1,16 @@
+using ChildFund.Infrastructure;
 using ChildFund.Infrastructure.Cms.Users;
 using EPiServer.Cms.Shell;
 using EPiServer.Cms.UI.AspNetIdentity;
 using EPiServer.Data;
 using EPiServer.Scheduler;
 using EPiServer.ServiceLocation;
+using EPiServer.Web;
 using EPiServer.Web.Routing;
 using Geta.Optimizely.Categories.Configuration;
 using Geta.Optimizely.Categories.Infrastructure.Initialization;
 using Mediachase.Commerce.Anonymous;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace ChildFund;
 
@@ -48,6 +51,8 @@ public class Startup(
             .AddEmbeddedLocalization<Startup>();
 
         services.AddGetaCategories();
+        services.TryAddEnumerable(Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton(typeof(IFirstRequestInitializer), typeof(ContentInstaller)));
+
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
