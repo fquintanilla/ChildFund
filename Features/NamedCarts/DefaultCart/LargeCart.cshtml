@@ -1,0 +1,159 @@
+﻿@using ChildFund.Features.Header
+
+@model LargeCartViewModel
+
+<div class="row">
+    <div class="col-12">
+        <div class="page-title">
+            <h1 class="heading-title">@Html.PropertyFor(x => x.CurrentContent.Name)</h1>
+        </div>
+        @if (ViewBag.QuoteMessage != null && !string.IsNullOrEmpty(ViewBag.QuoteMessage))
+        {
+            <div class="alert alert-success">
+                @ViewBag.QuoteMessage
+            </div>
+        }
+
+        @if (ViewBag.ErrorMessage != null && !string.IsNullOrEmpty(ViewBag.ErrorMessage))
+        {
+            <div class="alert alert-danger">
+                @ViewBag.ErrorMessage
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.Message))
+        {
+            <div class="alert alert-warning">
+                @Model.Message
+            </div>
+        }
+        @Html.PropertyFor(x => x.CurrentContent.MainContentArea)
+
+        @if (Model.Shipments.Any())
+        {
+            <div id="cartItemsId">
+                @await Html.PartialAsync("~/Features/NamedCarts/DefaultCart/_CartItems.cshtml", Model)
+            </div>
+        }
+        else
+        {
+            <p>The cart is empty.</p>
+        }
+    </div>
+</div>
+
+@if (Model.Shipments.Any())
+{
+    <div class="row">
+        <div class="col-12">
+            @if (Model.Shipments.Any())
+            {
+                @await Html.PartialAsync("~/Features/NamedCarts/DefaultCart/_ProcessCart.cshtml", Model)
+            }
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        (function () {
+            document.addEventListener('DOMContentLoaded', function () {
+                document.querySelectorAll('.cart-item').forEach(initCartItem);
+            });
+
+            function initCartItem(root) {
+                const qtyInput = root.querySelector('.jsCartQty');
+                const updateBtn = root.querySelector('.jsUpdateCartItem');
+                const subtotalEl = root.querySelector('.subtotal');
+
+                const actionUrl = root.dataset.action;
+                const code = root.dataset.code;
+                const shipmentId = parseInt(root.dataset.shipmentId || '0', 10);
+
+                function formatMoney(m) {
+                    // Accepts: "US$ 12.34" OR { amount: 12.34, currency: "USD" } OR { Amount, Currency }
+                    if (!m) return '';
+                    if (typeof m === 'string') return m;
+                    const amount = m.amount ?? m.Amount;
+                    const currency = m.currency ?? m.Currency ?? '';
+                    if (amount == null) return '';
+                    try {
+                        // Use currency code if available; fallback to plain number
+                        return currency
+                            ? new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount)
+                            : new Intl.NumberFormat().format(amount);
+                    } catch {
+                        return currency ? `${amount} ${currency}` : String(amount);
+                    }
+                }
+
+                updateBtn?.addEventListener('click', async function () {
+                    const payload = {
+                        // camelCase keys for System.Text.Json default policy:
+                        code,
+                        shipmentId,
+                        quantity: Math.max(1, parseFloat(qtyInput.value || '1')),
+                        size: null,
+                        newSize: null
+                    };
+
+                    try {
+                        const res = await fetch(actionUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                                // If you have anti-forgery enabled:
+                                // 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? ''
+                            },
+                            body: JSON.stringify(payload)
+                        });
+                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+                        const data = await res.json();
+
+                        // Handle PascalCase or camelCase
+                        const statusCode = data.StatusCode ?? data.statusCode;
+                        const message = data.Message ?? data.message;
+                        const countItems = data.CountItems ?? data.countItems;
+                        const subTotal = data.SubTotal ?? data.subTotal;
+                        const total = data.Total ?? data.total;
+                        const totalDiscount = data.TotalDiscount ?? data.totalDiscount;
+                        const shippingTotal = data.ShippingTotal ?? data.shippingTotal;
+                        const taxTotal = data.TaxTotal ?? data.taxTotal;
+
+                        // Update line subtotal
+                        if (subtotalEl && subTotal != null) {
+                            subtotalEl.textContent = formatMoney(subTotal);
+                        }
+
+                        // Optional page-level hooks (implement these in your layout if desired)
+                        if (typeof window.updateCartSummary === 'function') {
+                            window.updateCartSummary({
+                                statusCode, message, countItems, subTotal, total, totalDiscount, shippingTotal, taxTotal
+                            });
+                        } else {
+                            // Common lightweight updates if elements exist
+                            const countBadge = document.querySelector('[data-cart-count]');
+                            if (countBadge && typeof countItems === 'number') {
+                                countBadge.textContent = countItems;
+                            }
+                            const totalEl = document.querySelector('[data-cart-total]');
+                            if (totalEl && total != null) {
+                                totalEl.textContent = formatMoney(total);
+                            }
+                        }
+
+                        if (statusCode === 0) {
+                            console.warn(message || 'Warning updating cart item.');
+                        } else if (statusCode === -1) {
+                            console.error(message || 'Error updating cart item.');
+                        }
+                    } catch (err) {
+                        console.error('Update failed:', err);
+                    }
+                });
+            }
+        })();
+    </script>
+
+}

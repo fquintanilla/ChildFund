@@ -1,0 +1,20 @@
+﻿@using ChildFund.Features.Header
+@model LargeCartViewModel
+
+<div class="row justify-content-end mt-4">
+    <div class="col-12 col-md-5 col-lg-4">
+        <div class="jsCouponReplaceHtml mb-3">
+            @await Html.PartialAsync("~/Features/NamedCarts/DefaultCart/_CartSummary.cshtml", Model)
+        </div>
+
+        <div class="d-grid">
+            <button type="button"
+                    class="btn btn-primary btn-lg d-flex justify-content-center align-items-center gap-2"
+                    title="@Html.TranslateFallback("/Cart/Labels/Checkout", "Check Out")"
+                    onclick="window.location.href='@Url.ContentUrl(Model.CheckoutPage)'">
+                <i data-feather="check"></i>
+                <span>@Html.TranslateFallback("/Cart/Labels/Checkout", "Check Out")</span>
+            </button>
+        </div>
+    </div>
+</div>

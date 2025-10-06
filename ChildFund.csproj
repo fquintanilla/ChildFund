@@ -22,4 +22,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\Translations\**\*" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Features\Checkout\checkout.js" />
+  </ItemGroup>
 </Project>

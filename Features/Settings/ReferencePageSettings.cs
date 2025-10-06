@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using ChildFund.Features.Checkout;
+using ChildFund.Features.MyAccount.OrderConfirmation;
 using ChildFund.Features.NamedCarts.DefaultCart;
 using ChildFund.Infrastructure;
 using ChildFund.Infrastructure.Cms.Settings;
@@ -29,6 +30,11 @@ namespace ChildFund.Features.Settings
         [Display(Name = "Shopping cart page", GroupName = TabNames.SiteStructure, Order = 60)]
         public virtual ContentReference CartPage { get; set; }
 
+        [CultureSpecific]
+        [AllowedTypes(typeof(OrderConfirmationPage))]
+        [Display(Name = "Order confirmation page", GroupName = TabNames.SiteStructure, Order = 160)]
+        public virtual ContentReference OrderConfirmationPage { get; set; }
+
         #endregion
 
         #region Mail templates
@@ -36,6 +42,11 @@ namespace ChildFund.Features.Settings
         [CultureSpecific]
         [Display(Name = "Send order confirmations", GroupName = TabNames.MailTemplates, Order = 10)]
         public virtual bool SendOrderConfirmationMail { get; set; }
+
+        [CultureSpecific]
+        //[AllowedTypes(typeof(OrderConfirmationMailPage))]
+        [Display(Name = "Order confirmation", GroupName = TabNames.MailTemplates, Order = 20)]
+        public virtual ContentReference OrderConfirmationMail { get; set; }
 
         #endregion
     }

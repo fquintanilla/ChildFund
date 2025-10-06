@@ -1,10 +1,9 @@
 using ChildFund.Infrastructure;
 using ChildFund.Infrastructure.Cms.Users;
+using ChildFund.Infrastructure.Commerce.Extensions;
 using EPiServer.Cms.Shell;
-using EPiServer.Cms.UI.AspNetIdentity;
 using EPiServer.Data;
 using EPiServer.Scheduler;
-using EPiServer.ServiceLocation;
 using EPiServer.Web;
 using EPiServer.Web.Routing;
 using Geta.Optimizely.Categories.Configuration;
@@ -65,11 +64,12 @@ public class Startup(
         app.UseGetaCategories();
 
         app.UseAnonymousId();
-
         app.UseStaticFiles();
         app.UseRouting();
+        app.UseCors();
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseAnonymousCartMerging();
 
         app.UseEndpoints(endpoints =>
         {

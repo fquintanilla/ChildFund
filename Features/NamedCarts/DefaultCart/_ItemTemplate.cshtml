@@ -1,0 +1,96 @@
+﻿@using ChildFund.Features.Checkout.ViewModels
+@model CartItemViewModel
+
+@{
+    var isReadOnly = (ViewData["IsReadOnly"] as bool?) == true;
+    var shipmentId = ViewData["ShipmentId"] as int? ?? 0;
+    var unitPrice = Model.DiscountedUnitPrice?.Amount ?? Model.PlacedPrice.Amount;
+    var changeUrl = Url.Action("ChangeCartItem", "DefaultCart");
+}
+
+<div class="row g-3 cart-item align-items-start"
+     data-action="@changeUrl"
+     data-code="@Model.Code"
+     data-shipment-id="@shipmentId">
+    <!-- Image -->
+    <div class="col-4 col-md-2">
+        <a href="@Model.Url" class="d-block">
+            <img src="@Model.ImageUrl" class="img-fluid" alt="@Model.DisplayName" />
+        </a>
+    </div>
+
+    <!-- Details -->
+    <div class="col-8 col-md-10">
+        <div class="d-flex justify-content-between align-items-start">
+            <a href="@Model.Url" class="h6 mb-2 text-decoration-none">@Model.DisplayName</a>
+
+            @if (!isReadOnly)
+            {
+                <button type="button"
+                        class="btn btn-link p-0 jsRemoveCartItem"
+                        data-code="@Model.Code"
+                        data-shipment-id="@shipmentId"
+                        aria-label="Remove item">
+                    <i data-feather="trash-2"></i>
+                </button>
+            }
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <div class="text-muted small mb-2">
+                @Html.Raw(Model.Description)
+            </div>
+        }
+
+        <!-- Price -->
+        <div class="mb-2">
+            <span class="me-2 fw-semibold">Price:</span>
+            @if (Model.DiscountedUnitPrice.HasValue)
+            {
+                <span class="text-decoration-line-through me-2">@Model.PlacedPrice</span>
+                <span class="text-danger fw-semibold">@Model.DiscountedUnitPrice</span>
+            }
+            else
+            {
+                <span class="fw-semibold">@Model.PlacedPrice</span>
+            }
+        </div>
+
+        <!-- Quantity / Subtotal / Update -->
+        <div class="row gy-2 align-items-center">
+            <div class="col-6 col-sm-4 col-md-3">
+                <label class="form-label mb-1" for="qty-@Model.Code">Quantity</label>
+
+                <input id="qty-@Model.Code"
+                       type="number"
+                       min="1"
+                       step="1"
+                       class="form-control jsCartQty"
+                       value="@((int)Model.Quantity)"
+                @(isReadOnly ? "disabled" : "") />
+            </div>
+
+            <div class="col-12 col-sm-4 col-md-5">
+                <div class="mb-1 fw-semibold">
+                    Subtotal:
+                    <span class="text-danger subtotal"
+                          data-unit-price="@unitPrice"
+                          data-currency="@Model.DiscountedPrice">
+                        @Model.DiscountedPrice
+                    </span>
+                </div>
+            </div>
+
+            @if (!isReadOnly)
+            {
+                <div class="col-12 col-sm-4 col-md-4 text-sm-end">
+                    <button type="button"
+                            class="btn btn-outline-primary jsUpdateCartItem">
+                        Update
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>

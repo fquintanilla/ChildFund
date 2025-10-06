@@ -1,0 +1,202 @@
+﻿@using ChildFund.Features.Checkout.ViewModels
+@model CheckoutViewModel
+
+@{
+    var showUseShipping = Model.Shipments != null && Model.Shipments.Count == 1;
+    var isAuth = User.Identity.IsAuthenticated;
+
+    // 0 = new, 1 = existing, 2 = use shipping
+    var type = Model.BillingAddressType;
+
+    var showExisting = isAuth && type == 1;
+    var showNew = type == 0;
+    var hideAll = type == 2;
+}
+
+<div class="row">
+    <div class="col-12">
+        <div id="billingAddressContainer" class="mb-4">
+            <div id="checkout-step-billing"
+                 class="jsChangeAddressCard"
+                 data-urlChangeAddress="@Url.Action("ChangeAddress", "Checkout")">
+
+                <!-- Choice -->
+                <fieldset class="border rounded p-3 mb-3">
+                    <legend class="float-none w-auto px-2 fs-6 mb-0">
+                        @Html.TranslateFallback("/Checkout/Billing/Title", "Billing Address")
+                    </legend>
+
+                    <div class="form-check mt-2">
+                        @if (showUseShipping)
+                        {
+                            @Html.RadioButtonFor(m => m.BillingAddressType, 2,
+                                     new { @class = "form-check-input jsBillingAddressMode", id = "bill-use-shipping" })
+                            <label class="form-check-label" for="bill-use-shipping">
+                                @Html.TranslateFallback("Use shipping address as billing address", "Use shipping address as billing address")
+                            </label>
+                        }
+                    </div>
+
+                    @if (isAuth)
+                    {
+                        <div class="form-check mt-2">
+                            @Html.RadioButtonFor(m => m.BillingAddressType, 1,
+                                     new { @class = "form-check-input jsBillingAddressMode", id = "bill-existing" })
+                            <label class="form-check-label" for="bill-existing">
+                                @Html.TranslateFallback("/Checkout/Billing/ExistingAddress", "Bill to existing address")
+                            </label>
+                        </div>
+                    }
+
+                    <div class="form-check mt-2">
+                        @Html.RadioButtonFor(m => m.BillingAddressType, 0,
+                                 new { @class = "form-check-input jsBillingAddressMode", id = "bill-new" })
+                        <label class="form-check-label" for="bill-new">
+                            @Html.TranslateFallback("/Checkout/Billing/NewAddress", "Bill to new address")
+                        </label>
+                    </div>
+                </fieldset>
+
+                <!-- Existing address dropdown -->
+                <div id="existingBillingWrap"
+                     class="mb-3 @(showExisting ? "" : "d-none")"
+                     aria-live="polite">
+                    <div class="mb-2 fw-semibold">
+                        @Html.TranslateFallback("/Checkout/Billing/SelectExisting", "Select a billing address")
+                    </div>
+                    <div class="form-group">
+                        @{
+                            var values = new List<KeyValuePair<string, string>>();
+                            foreach (var a in Model.AvailableAddresses)
+                            {
+                                values.Add(new KeyValuePair<string, string>(a.Name, a.AddressId));
+                            }
+                            var defaultBilling = Model.AvailableAddresses.FirstOrDefault(x => x.BillingDefault);
+                            var defaultBillingId = defaultBilling?.AddressId;
+                        }
+                        @(await Component.InvokeAsync("Dropdown", new
+                        {
+                            list = values,
+                            selectedValue = Model.BillingAddress.AddressId ?? defaultBillingId,
+                            selectorClassItem = "",
+                            name = "BillingAddress.AddressId"
+                        }))
+                    </div>
+                </div>
+
+                <!-- New billing address form -->
+                <div id="newBillingWrap"
+                     class="@(showNew ? "" : "d-none")"
+                     aria-live="polite">
+                    @Html.HiddenFor(m => m.BillingAddress.Name)
+                    @Html.HiddenFor(m => m.BillingAddress.DaytimePhoneNumber)
+                    @Html.HiddenFor(m => m.BillingAddress.BillingDefault)
+                    @Html.HiddenFor(m => m.BillingAddress.ShippingDefault)
+
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            @Html.LabelFor(m => m.BillingAddress.FirstName, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.BillingAddress.FirstName, new { @class = "form-control jsRequired" })
+                            @Html.ValidationMessageFor(m => m.BillingAddress.FirstName, null, new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-12 col-md-6">
+                            @Html.LabelFor(m => m.BillingAddress.LastName, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.BillingAddress.LastName, new { @class = "form-control jsRequired" })
+                            @Html.ValidationMessageFor(m => m.BillingAddress.LastName, null, new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            @Html.LabelFor(m => m.BillingAddress.Email, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.BillingAddress.Email, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.BillingAddress.Email, null, new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-12 col-md-6">
+                            @Html.LabelFor(m => m.BillingAddress.Organization, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.BillingAddress.Organization, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.BillingAddress.Organization, null, new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            @Html.LabelFor(m => m.BillingAddress.Line1, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.BillingAddress.Line1, new { @class = "form-control jsRequired" })
+                            @Html.ValidationMessageFor(m => m.BillingAddress.Line1, null, new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-12 col-md-6">
+                            @Html.LabelFor(m => m.BillingAddress.Line2, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.BillingAddress.Line2, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.BillingAddress.Line2, null, new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            @Html.LabelFor(m => m.BillingAddress.City, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.BillingAddress.City, new { @class = "form-control jsChangeTaxAddress jsRequired" })
+                            @Html.ValidationMessageFor(m => m.BillingAddress.City, null, new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-12 col-md-6">
+                            @Html.LabelFor(m => m.BillingAddress.PostalCode, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.BillingAddress.PostalCode, new { @class = "form-control jsChangeTaxAddress jsRequired" })
+                            @Html.ValidationMessageFor(m => m.BillingAddress.PostalCode, null, new { @class = "text-danger small" })
+                        </div>
+                    </div>
+                </div>
+
+                @* Validation summary *@
+                @if (ViewData.ModelState["BillingAddress.AddressId"]?.Errors?.Count > 0)
+                {
+                    <div class="alert alert-danger mt-3" role="alert">
+                        <strong>Billing address is required!</strong>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Payment block remains -->
+        <div class="jsPaymentForm" action="@Url.Action("UpdatePaymentAddress", "Checkout")" novalidate>
+            <div class="row section-box container--gutter-layout">
+                <div class="col-12 jsCouponReplaceHtml" id="paymentBlock">
+                    @await Html.PartialAsync("~/Features/Checkout/_AddPayment.cshtml", Model)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const container = document.getElementById('checkout-step-billing');
+        if (!container) return;
+
+        const existingWrap = document.getElementById('existingBillingWrap');
+        const newWrap = document.getElementById('newBillingWrap');
+
+        function setDisabled(root, disabled) {
+            if (!root) return;
+            root.querySelectorAll('input, select, textarea, button').forEach(el => el.disabled = disabled);
+        }
+
+        function applyMode(value) {
+            // 2 = use shipping (hide all), 1 = existing, 0 = new
+            const useShipping = value === '2';
+            const existing = value === '1';
+            const fresh = value === '0';
+
+            // Show/Hide containers
+            if (existingWrap) {
+                existingWrap.classList.toggle('d-none', !(existing && !useShipping));
+                setDisabled(existingWrap, !(existing && !useShipping));
+            }
+            if (newWrap) {
+                newWrap.classList.toggle('d-none', !(fresh && !useShipping));
+                setDisabled(newWrap, !(fresh && !useShipping));
+            }
+        }
+
+        // Initialize from the checked radio
+        const radios = container.querySelectorAll('.jsBillingAddressMode');
+        const selected = Array.from(radios).find(r => r.checked);
+        applyMode(selected ? selected.value : '0');
+
+        // Change handler
+        radios.forEach(r => r.addEventListener('change', () => applyMode(r.value)));
+    });
+</script>

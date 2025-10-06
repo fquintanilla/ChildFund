@@ -227,54 +227,54 @@ namespace ChildFund.Features.Checkout.Services
             return null;
         }
 
-        //public virtual async Task<bool> SendConfirmation(CheckoutViewModel viewModel, IPurchaseOrder purchaseOrder)
-        //{
-        //    var referenceSettings = _settingsService.GetSiteSettings<ReferencePageSettings>();
-        //    var sendOrderConfirmationMail = referenceSettings?.SendOrderConfirmationMail ?? false;
-        //    if (sendOrderConfirmationMail)
-        //    {
-        //        var queryCollection = new NameValueCollection
-        //        {
-        //            {"contactId", _customerContext.CurrentContactId.ToString()},
-        //            {"orderNumber", purchaseOrder.OrderLink.OrderGroupId.ToString(CultureInfo.CurrentCulture)}
-        //        };
+        public virtual async Task<bool> SendConfirmation(CheckoutViewModel viewModel, IPurchaseOrder purchaseOrder)
+        {
+            var referenceSettings = _settingsService.GetSiteSettings<ReferencePageSettings>();
+            var sendOrderConfirmationMail = referenceSettings?.SendOrderConfirmationMail ?? false;
+            if (sendOrderConfirmationMail)
+            {
+                var queryCollection = new NameValueCollection
+                {
+                    {"contactId", _customerContext.CurrentContactId.ToString()},
+                    {"orderNumber", purchaseOrder.OrderLink.OrderGroupId.ToString(CultureInfo.CurrentCulture)}
+                };
 
-        //        try
-        //        {
-        //            await _mailService.SendAsync(referenceSettings.OrderConfirmationMail, queryCollection, purchaseOrder.GetFirstForm().Payments.FirstOrDefault().BillingAddress.Email, CultureInfo.CurrentCulture.Name);
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            _log.Warning(string.Format("Unable to send purchase receipt to '{0}'.", purchaseOrder.GetFirstForm().Payments.FirstOrDefault().BillingAddress.Email), e);
-        //            return false;
-        //        }
-        //    }
+                try
+                {
+                    await _mailService.SendAsync(referenceSettings.OrderConfirmationMail, queryCollection, purchaseOrder.GetFirstForm().Payments.FirstOrDefault().BillingAddress.Email, CultureInfo.CurrentCulture.Name);
+                }
+                catch (Exception e)
+                {
+                    _log.Warning(string.Format("Unable to send purchase receipt to '{0}'.", purchaseOrder.GetFirstForm().Payments.FirstOrDefault().BillingAddress.Email), e);
+                    return false;
+                }
+            }
 
-        //    return true;
-        //}
+            return true;
+        }
 
-        //public virtual string BuildRedirectionUrl(CheckoutViewModel checkoutViewModel, IPurchaseOrder purchaseOrder, bool confirmationSentSuccessfully)
-        //{
-        //    var queryCollection = new NameValueCollection
-        //    {
-        //        {"contactId", _customerContext.CurrentContactId.ToString()},
-        //        {"orderNumber", purchaseOrder.OrderLink.OrderGroupId.ToString(CultureInfo.CurrentCulture)}
-        //    };
+        public virtual string BuildRedirectionUrl(CheckoutViewModel checkoutViewModel, IPurchaseOrder purchaseOrder, bool confirmationSentSuccessfully)
+        {
+            var queryCollection = new NameValueCollection
+            {
+                {"contactId", _customerContext.CurrentContactId.ToString()},
+                {"orderNumber", purchaseOrder.OrderLink.OrderGroupId.ToString(CultureInfo.CurrentCulture)}
+            };
 
-        //    if (!confirmationSentSuccessfully)
-        //    {
-        //        queryCollection.Add("notificationMessage", string.Format(_localizationService.GetString("/OrderConfirmationMail/ErrorMessages/SmtpFailure"), checkoutViewModel.BillingAddress?.Email));
-        //    }
+            if (!confirmationSentSuccessfully)
+            {
+                queryCollection.Add("notificationMessage", string.Format(_localizationService.GetString("/OrderConfirmationMail/ErrorMessages/SmtpFailure"), checkoutViewModel.BillingAddress?.Email));
+            }
 
-        //    var referenceSettings = _settingsService.GetSiteSettings<ReferencePageSettings>();
-        //    var confirmationPage = referenceSettings?.OrderConfirmationPage ?? ContentReference.EmptyReference;
-        //    if (ContentReference.IsNullOrEmpty(confirmationPage))
-        //    {
-        //        return null;
-        //    }
+            var referenceSettings = _settingsService.GetSiteSettings<ReferencePageSettings>();
+            var confirmationPage = referenceSettings?.OrderConfirmationPage ?? ContentReference.EmptyReference;
+            if (ContentReference.IsNullOrEmpty(confirmationPage))
+            {
+                return null;
+            }
 
-        //    return new UrlBuilder(UrlResolver.Current.GetUrl(confirmationPage)) { QueryCollection = queryCollection }.ToString();
-        //}
+            return new UrlBuilder(UrlResolver.Current.GetUrl(confirmationPage)) { QueryCollection = queryCollection }.ToString();
+        }
 
         #region Payment Plan
 

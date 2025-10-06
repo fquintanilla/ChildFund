@@ -1,6 +1,7 @@
 ﻿using ChildFund.Features.Checkout.Payments;
 using ChildFund.Features.MyAccount.AddressBook;
 using ChildFund.Features.MyOrganization;
+using ChildFund.Features.Shared;
 using EPiServer.Commerce.Order;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce;
@@ -8,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ChildFund.Features.Checkout.ViewModels
 {
-    public class CheckoutViewModel //: ContentViewModel<CheckoutPage>
+    public class CheckoutViewModel : ContentViewModel<CheckoutPage>
     {
         public const string MultiShipmentCheckoutViewName = "MultiShipmentCheckout";
 

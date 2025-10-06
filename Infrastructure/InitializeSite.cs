@@ -1,7 +1,10 @@
 ﻿using ChildFund.Features.CatalogContent.Services;
 using ChildFund.Features.Checkout.Payments;
 using ChildFund.Features.Checkout.Services;
+using ChildFund.Features.Checkout.ViewModels;
 using ChildFund.Features.MyAccount.AddressBook;
+using ChildFund.Features.MyAccount.CreditCard;
+using ChildFund.Features.MyOrganization.Organization;
 using ChildFund.Features.Shared;
 using ChildFund.Infrastructure.Cms;
 using ChildFund.Infrastructure.Cms.Settings;
@@ -9,6 +12,7 @@ using ChildFund.Infrastructure.Commerce.Customer.Services;
 using ChildFund.Infrastructure.Commerce.Extensions;
 using ChildFund.Infrastructure.Commerce.Markets;
 using EPiServer.Commerce.Internal.Migration;
+using EPiServer.Commerce.Order;
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
 using EPiServer.Globalization;
@@ -23,10 +27,10 @@ namespace ChildFund.Infrastructure
     {
         public void ConfigureContainer(ServiceConfigurationContext context)
         {
-            //context.Services.AddTransient<CheckoutViewModelFactory>();
+            context.Services.AddTransient<CheckoutViewModelFactory>();
             //context.Services.AddSingleton<MultiShipmentViewModelFactory>();
-            //context.Services.AddSingleton<OrderSummaryViewModelFactory>();
-            //context.Services.AddTransient<PaymentMethodViewModelFactory>();
+            context.Services.AddSingleton<OrderSummaryViewModelFactory>();
+            context.Services.AddSingleton<PaymentMethodViewModelFactory>();
             //context.Services.AddSingleton<CatalogEntryViewModelFactory>();
             //context.Services.AddSingleton<IHeaderViewModelFactory, HeaderViewModelFactory>();
             context.Services.AddSingleton<CartItemViewModelFactory>();
@@ -44,9 +48,14 @@ namespace ChildFund.Infrastructure
             context.Services.AddTransient<IProductService, ProductService>();
             context.Services.AddTransient<IPromotionService, PromotionService>();
             context.Services.AddTransient<IShippingService, ShippingService>();
+            context.Services.AddTransient<IOrganizationService, OrganizationService>();
+            context.Services.AddTransient<IMailService, MailService>();
+            context.Services.AddSingleton<IHtmlDownloader, HtmlDownloader>();
             context.Services.AddTransient<CheckoutService>();
-
             context.Services.AddSingleton<ISettingsService, SettingsService>();
+            context.Services.AddSingleton<ICreditCardService, CreditCardService>();
+
+            context.Services.AddTransient<IPaymentMethod, GenericCreditCardPaymentOption>();
 
             context.ConfigurationComplete += (o, e) =>
             {

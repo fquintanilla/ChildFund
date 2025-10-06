@@ -1,12 +1,15 @@
 ﻿using ChildFund.Features.Checkout.ViewModels;
 using ChildFund.Features.Header;
 using ChildFund.Features.MyAccount.AddressBook;
+using ChildFund.Features.NamedCarts.DefaultCart;
 using ChildFund.Features.Settings;
 using ChildFund.Infrastructure.Cms.Settings;
 using ChildFund.Infrastructure.Commerce.Markets;
 using EPiServer.Commerce.Order;
+using EPiServer.Security;
 using EPiServer.Web.Routing;
 using Mediachase.Commerce;
+using Mediachase.Commerce.Security;
 using ReferenceConverter = Mediachase.Commerce.Catalog.ReferenceConverter;
 
 namespace ChildFund.Features.Checkout.Services
@@ -51,7 +54,62 @@ namespace ChildFund.Features.Checkout.Services
                 IsSharedCart = isSharedCart
             };
         }
-        
+
+        public virtual LargeCartViewModel CreateLargeCartViewModel(ICart cart, CartPage cartPage)
+        {
+            var pageSettings = settingsService.GetSiteSettings<ReferencePageSettings>();
+            var contact = PrincipalInfo.CurrentPrincipal.GetCustomerContact();
+            AddressModel addressModel;
+            if (cart == null)
+            {
+                var zeroAmount = new Money(0, currencyService.GetCurrentCurrency());
+                addressModel = new AddressModel();
+                addressBookService.LoadCountriesAndRegionsForAddress(addressModel);
+                return new LargeCartViewModel(cartPage)
+                {
+                    Shipments = Enumerable.Empty<ShipmentViewModel>(),
+                    TotalDiscount = zeroAmount,
+                    Total = zeroAmount,
+                    TaxTotal = zeroAmount,
+                    ShippingTotal = zeroAmount,
+                    Subtotal = zeroAmount,
+                    ReferrerUrl = GetReferrerUrl(),
+                    CheckoutPage = pageSettings?.CheckoutPage,
+                    //MultiShipmentPage = checkoutPage.MultiShipmentPage,
+                    AppliedCouponCodes = Enumerable.Empty<string>(),
+                    AddressModel = addressModel,
+                    ShowRecommendations = true
+                };
+            }
+
+            var totals = orderGroupCalculator.GetOrderGroupTotals(cart);
+            var orderDiscountTotal = orderGroupCalculator.GetOrderDiscountTotal(cart);
+            var shippingDiscountTotal = cart.GetShippingDiscountTotal();
+            var discountTotal = shippingDiscountTotal + orderDiscountTotal;
+
+            var model = new LargeCartViewModel(cartPage)
+            {
+                Shipments = shipmentViewModelFactory.CreateShipmentsViewModel(cart),
+                TotalDiscount = discountTotal,
+                Total = totals.Total,
+                ShippingTotal = totals.ShippingTotal,
+                Subtotal = totals.SubTotal,
+                TaxTotal = totals.TaxTotal,
+                ReferrerUrl = GetReferrerUrl(),
+                CheckoutPage = pageSettings?.CheckoutPage,
+                //MultiShipmentPage = checkoutPage.MultiShipmentPage,
+                AppliedCouponCodes = cart.GetFirstForm().CouponCodes.Distinct(),
+                HasOrganization = contact?.OwnerId != null
+            };
+
+            var shipment = model.Shipments.FirstOrDefault();
+            addressModel = shipment?.Address ?? new AddressModel();
+            addressBookService.LoadCountriesAndRegionsForAddress(addressModel);
+            model.AddressModel = addressModel;
+
+            return model;
+        }
+
         private decimal GetLineItemsTotalQuantity(ICart cart)
         {
             if (cart != null)

@@ -10,7 +10,6 @@ using ChildFund.Infrastructure.Commerce.Markets;
 using EPiServer.Commerce.Catalog.ContentTypes;
 using EPiServer.Commerce.Marketing;
 using EPiServer.Commerce.Order;
-using EPiServer.Commerce.UI.Admin.Shipping.Internal;
 using EPiServer.Web;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Catalog;
@@ -29,7 +28,6 @@ namespace ChildFund.Features.Checkout.Services
         ReferenceConverter referenceConverter,
         IContentLoader contentLoader,
         IRelationRepository relationRepository,
-        IShippingService shippingManagerFacade,
         IWarehouseRepository warehouseRepository,
         ILineItemCalculator lineItemCalculator,
         ICurrencyService currencyService)
@@ -38,9 +36,24 @@ namespace ChildFund.Features.Checkout.Services
         private readonly string VariantOptionCodesProperty = "VariantOptionCodes";
         private readonly CustomerContext _customerContext = CustomerContext.Current;
 
-
         public string DefaultCartName => "Default" + SiteDefinition.Current.StartPage.ID;
-        
+
+        public Dictionary<ILineItem, List<ValidationIssue>> ChangeCartItem(ICart cart, int shipmentId, string code, decimal quantity, string size, string newSize)
+        {
+            _ = new Dictionary<ILineItem, List<ValidationIssue>>();
+            Dictionary<ILineItem, List<ValidationIssue>> validationIssues;
+            if (quantity > 0)
+            {
+                validationIssues = ChangeQuantity(cart, shipmentId, code, quantity);
+            }
+            else
+            {
+                validationIssues = RemoveLineItem(cart, shipmentId, code);
+            }
+
+            return validationIssues;
+        }
+
         public AddToCartResult AddToCart(ICart cart, RequestParamsToCart requestParams)
         {
             var contentLink = referenceConverter.GetContentLink(requestParams.Code);
