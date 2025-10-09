@@ -20,7 +20,7 @@ namespace ChildFund.Features.Checkout.ViewModels
             Payments = new List<PaymentOptionBase>();
         }
 
-        public CheckoutViewModel(CheckoutPage checkoutPage) //: base(checkoutPage)
+        public CheckoutViewModel(CheckoutPage checkoutPage) : base(checkoutPage)
         {
             Payments = new List<PaymentOptionBase>();
         }

@@ -6,6 +6,9 @@ using ChildFund.Features.MyAccount.AddressBook;
 using ChildFund.Features.MyAccount.CreditCard;
 using ChildFund.Features.MyOrganization.Organization;
 using ChildFund.Features.Shared;
+using ChildFund.Features.Upsell.Dsl;
+using ChildFund.Features.Upsell.Evaluators;
+using ChildFund.Features.Upsell.Services;
 using ChildFund.Infrastructure.Cms;
 using ChildFund.Infrastructure.Cms.Settings;
 using ChildFund.Infrastructure.Commerce.Customer.Services;
@@ -56,6 +59,24 @@ namespace ChildFund.Infrastructure
             context.Services.AddSingleton<ICreditCardService, CreditCardService>();
 
             context.Services.AddTransient<IPaymentMethod, GenericCreditCardPaymentOption>();
+
+            #region Upsell
+
+            context.Services.AddSingleton<IConditionEvaluator, CartTotalGteEvaluator>();
+            context.Services.AddSingleton<IConditionEvaluator, CartTotalLteEvaluator>();
+            context.Services.AddSingleton<IConditionEvaluator, ContainsSkuEvaluator>();
+            context.Services.AddSingleton<IConditionEvaluator, DateBetweenEvaluator>();
+            context.Services.AddSingleton<IConditionEvaluator, CustomerSegmentInEvaluator>();
+            // services.AddSingleton<IConditionEvaluator, ContainsTagEvaluator>(); // if needed
+
+            context.Services.AddSingleton<IConditionRegistry, ConditionRegistry>();
+            context.Services.AddSingleton<IDslEvaluator, JsonDslEvaluator>();
+
+            context.Services.AddTransient<IUpsellCandidateRepository, UpsellCandidateRepository>();
+            context.Services.AddTransient<IUpsellSelectorService, UpsellSelectorService>();
+            context.Services.AddTransient<ICartContextProvider, CartContextProvider>();
+
+            #endregion
 
             context.ConfigurationComplete += (o, e) =>
             {

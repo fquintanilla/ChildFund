@@ -4,12 +4,9 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace ChildFund.Features.Checkout.Services
 {
-    public class AnonymousPurchaseValidation : PurchaseValidation
+    public class AnonymousPurchaseValidation(LocalizationService localizationService)
+        : PurchaseValidation(localizationService)
     {
-        public AnonymousPurchaseValidation(LocalizationService localizationService) : base(localizationService)
-        {
-        }
-
         public override bool ValidateModel(ModelStateDictionary modelState, CheckoutViewModel viewModel)
         {
             return

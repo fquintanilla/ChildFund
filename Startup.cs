@@ -50,7 +50,7 @@ public class Startup(
             .AddEmbeddedLocalization<Startup>();
 
         services.AddGetaCategories();
-        services.TryAddEnumerable(Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton(typeof(IFirstRequestInitializer), typeof(ContentInstaller)));
+        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IFirstRequestInitializer), typeof(ContentInstaller)));
 
     }
 

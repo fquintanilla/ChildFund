@@ -18,6 +18,10 @@ namespace ChildFund.Infrastructure
         [RequiredAccess(AccessLevel.Edit)]
         public const string MailTemplates = "MailTemplates";
 
+        [Display(Order = 250)]
+        [RequiredAccess(AccessLevel.Edit)]
+        public const string UpsellRules = "Upsell Rules";
+
         [Display(Order = 260)]
         [RequiredAccess(AccessLevel.Edit)]
         public const string MetaData = "Metadata";

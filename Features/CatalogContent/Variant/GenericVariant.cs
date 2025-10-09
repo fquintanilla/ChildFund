@@ -1,9 +1,8 @@
 ﻿using EPiServer.Commerce.Catalog.ContentTypes;
-using EPiServer.Commerce.Catalog.DataAnnotations;
-using EPiServer.Shell.ObjectEditing;
 using EPiServer.SpecializedProperties;
 using System.ComponentModel.DataAnnotations;
 using ChildFund.Infrastructure.Cms;
+using EPiServer.Commerce.Catalog.DataAnnotations;
 using EPiServer.Web;
 
 namespace ChildFund.Features.CatalogContent.Variant
@@ -77,5 +76,34 @@ namespace ChildFund.Features.CatalogContent.Variant
 
         //[ScaffoldColumn(false)]
         //public virtual string Description { get => MainBody.ToStringValue(); }
+
+        #region Upsell Rules
+
+        [CultureSpecific]
+        [Display(
+            Name = "Is Upsell Product",
+            Order = 10,
+            GroupName = Infrastructure.TabNames.UpsellRules,
+            Description = "Marks this variant as eligible for upsell logic.")]
+        public virtual bool IsUpsell { get; set; }
+
+        [CultureSpecific]
+        [Display(
+            Name = "Upsell Sequence",
+            Order = 20,
+            GroupName = Infrastructure.TabNames.UpsellRules,
+            Description = "Defines global priority for upsells. Lower values = higher priority.")]
+        public virtual int UpsellSequence { get; set; }
+
+        [CultureSpecific]
+        [Display(
+            Name = "Upsell Tags",
+            Order = 30,
+            GroupName = Infrastructure.TabNames.UpsellRules,
+            Description = "Freeform tags for grouping upsell items (e.g., 'emergency', 'premium', 'seasonal').")]
+        [BackingType(typeof(PropertyStringList))]
+        public virtual IList<string>? UpsellTags { get; set; }
+
+        #endregion
     }
 }
