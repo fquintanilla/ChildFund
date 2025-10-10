@@ -30,6 +30,9 @@ namespace ChildFund.Infrastructure
         [RequiredAccess(AccessLevel.Edit)]
         public const string Styles = "Styles";
 
+        [Display(Order = 290)]
+        public const string PurchaseSettings = "Purchase Settings";
+
         [Display(Name = "Settings", Order = 292)]
         public const string Settings = SystemTabNames.Settings;
     }

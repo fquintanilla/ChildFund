@@ -1,6 +1,5 @@
 ﻿using EPiServer.Commerce.Catalog.ContentTypes;
 using EPiServer.Commerce.Catalog.DataAnnotations;
-using EPiServer.Shell.ObjectEditing;
 using EPiServer.SpecializedProperties;
 using System.ComponentModel.DataAnnotations;
 using ChildFund.Infrastructure.Cms;
@@ -43,17 +42,17 @@ namespace ChildFund.Features.CatalogContent.Category
             set { this.SetPropertyValue(page => page.PageTitleTextBackgroundColor, value); }
         }
 
-        [Display(Name = "Hide site header", GroupName = Infrastructure.TabNames.Settings, Order = 100)]
+        [Display(Name = "Hide site header", GroupName = ChildFund.Infrastructure.TabNames.Settings, Order = 100)]
         public virtual bool HideSiteHeader { get; set; }
 
-        [Display(Name = "Hide site footer", GroupName = Infrastructure.TabNames.Settings, Order = 200)]
+        [Display(Name = "Hide site footer", GroupName = ChildFund.Infrastructure.TabNames.Settings, Order = 200)]
         public virtual bool HideSiteFooter { get; set; }
 
-        [Display(Name = "CSS files", GroupName = Infrastructure.TabNames.Styles, Order = 100)]
+        [Display(Name = "CSS files", GroupName = ChildFund.Infrastructure.TabNames.Styles, Order = 100)]
         public virtual LinkItemCollection CssFiles { get; set; }
 
         [Searchable(false)]
-        [Display(Name = "CSS", GroupName = Infrastructure.TabNames.Styles, Order = 200)]
+        [Display(Name = "CSS", GroupName = ChildFund.Infrastructure.TabNames.Styles, Order = 200)]
         [UIHint(UIHint.Textarea)]
         public virtual string Css { get; set; }
     }

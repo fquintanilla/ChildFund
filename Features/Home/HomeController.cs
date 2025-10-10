@@ -1,10 +1,14 @@
-﻿using EPiServer.Web.Mvc;
+﻿using ChildFund.Core;
+using EPiServer.Web.Mvc;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChildFund.Features.Home
 {
-    public class HomeController : PageController<HomePage>
+    public class HomeController(IChildFundClient client) : PageController<HomePage>
     {
-        public ActionResult Index(HomePage currentContent) => View("~/Features/Home/Index.cshtml", currentContent);
+        public async Task<ActionResult> Index(HomePage currentContent)
+        {
+            return View("~/Features/Home/Index.cshtml", currentContent);
+        } 
     }
 }

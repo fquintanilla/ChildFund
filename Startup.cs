@@ -1,3 +1,4 @@
+using ChildFund.Core.Extensions;
 using ChildFund.Infrastructure;
 using ChildFund.Infrastructure.Cms.Users;
 using ChildFund.Infrastructure.Commerce.Extensions;
@@ -43,6 +44,8 @@ public class Startup(
                 };
             }
         });
+
+        services.AddChildFund(configuration);
 
         services
             .AddCommerce()
