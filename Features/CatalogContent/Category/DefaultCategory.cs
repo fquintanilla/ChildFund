@@ -1,9 +1,6 @@
-﻿using EPiServer.Commerce.Catalog.ContentTypes;
+﻿using ChildFund.Infrastructure.Cms.Constants;
 using EPiServer.Commerce.Catalog.DataAnnotations;
-using EPiServer.SpecializedProperties;
-using System.ComponentModel.DataAnnotations;
-using ChildFund.Infrastructure.Cms;
-using EPiServer.Web;
+using TabNames = ChildFund.Infrastructure.Cms.Constants.TabNames;
 
 namespace ChildFund.Features.CatalogContent.Category
 {
@@ -29,7 +26,7 @@ namespace ChildFund.Features.CatalogContent.Category
         //[ClientEditor(ClientEditingClass = "foundation/editors/ColorPicker")]
         public virtual string PageTitleTextColor
         {
-            get { return this.GetPropertyValue(page => page.PageTitleTextColor) ?? Constant.ColorPicker.PageTitleTextColorDefault; }
+            get { return this.GetPropertyValue(page => page.PageTitleTextColor) ?? ColorPicker.PageTitleTextColorDefault; }
             set { this.SetPropertyValue(page => page.PageTitleTextColor, value); }
         }
 
@@ -38,21 +35,21 @@ namespace ChildFund.Features.CatalogContent.Category
         //[ClientEditor(ClientEditingClass = "foundation/editors/ColorPicker")]
         public virtual string PageTitleTextBackgroundColor
         {
-            get { return this.GetPropertyValue(page => page.PageTitleTextBackgroundColor) ?? Constant.ColorPicker.PageTitleTextBackgroundColorDefault; }
+            get { return this.GetPropertyValue(page => page.PageTitleTextBackgroundColor) ?? ColorPicker.PageTitleTextBackgroundColorDefault; }
             set { this.SetPropertyValue(page => page.PageTitleTextBackgroundColor, value); }
         }
 
-        [Display(Name = "Hide site header", GroupName = ChildFund.Infrastructure.TabNames.Settings, Order = 100)]
+        [Display(Name = "Hide site header", GroupName = TabNames.Settings, Order = 100)]
         public virtual bool HideSiteHeader { get; set; }
 
-        [Display(Name = "Hide site footer", GroupName = ChildFund.Infrastructure.TabNames.Settings, Order = 200)]
+        [Display(Name = "Hide site footer", GroupName = TabNames.Settings, Order = 200)]
         public virtual bool HideSiteFooter { get; set; }
 
-        [Display(Name = "CSS files", GroupName = ChildFund.Infrastructure.TabNames.Styles, Order = 100)]
+        [Display(Name = "CSS files", GroupName = TabNames.Styles, Order = 100)]
         public virtual LinkItemCollection CssFiles { get; set; }
 
         [Searchable(false)]
-        [Display(Name = "CSS", GroupName = ChildFund.Infrastructure.TabNames.Styles, Order = 200)]
+        [Display(Name = "CSS", GroupName = TabNames.Styles, Order = 200)]
         [UIHint(UIHint.Textarea)]
         public virtual string Css { get; set; }
     }

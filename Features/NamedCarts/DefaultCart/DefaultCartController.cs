@@ -1,15 +1,10 @@
 ﻿using ChildFund.Features.Checkout.Services;
 using ChildFund.Features.Checkout.ViewModels;
-using EPiServer.Commerce.Catalog.ContentTypes;
-using EPiServer.Commerce.Order;
-using EPiServer.Web.Mvc;
-using Microsoft.AspNetCore.Mvc;
-using System.Text;
-using Mediachase.Commerce.Catalog;
+using ReferenceConverter = Mediachase.Commerce.Catalog.ReferenceConverter;
 
 namespace ChildFund.Features.NamedCarts.DefaultCart
 {
-    public class DefaultCartController(
+	public class DefaultCartController(
         ICartService cartService,
         IOrderRepository orderRepository,
         IContentLoader contentLoader,
@@ -43,6 +38,7 @@ namespace ChildFund.Features.NamedCarts.DefaultCart
         }
 
         [HttpPost]
+        [Route("/DefaultCart/AddToCart")]
         public async Task<ActionResult> AddToCart([FromBody] RequestParamsToCart param)
         {
             var warningMessage = string.Empty;

@@ -1,15 +1,14 @@
 ﻿using EPiServer.DataAccess;
 using EPiServer.Framework.TypeScanner;
 using EPiServer.Globalization;
-using EPiServer.Web;
 using EPiServer.Logging;
-using System.Collections.Concurrent;
 using EPiServer.Security;
+using System.Collections.Concurrent;
 using ILogger = EPiServer.Logging.ILogger;
 
 namespace ChildFund.Infrastructure.Cms.Settings
 {
-    public interface ISettingsService
+	public interface ISettingsService
     {
         ContentReference GlobalSettingsRoot { get; set; }
         ConcurrentDictionary<string, Dictionary<Type, object>> SiteSettings { get; }

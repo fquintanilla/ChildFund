@@ -1,5 +1,5 @@
-﻿using ChildFund.Features.Shared;
-using ChildFund.Infrastructure;
+﻿using ChildFund.Features.Shared.Pages;
+using ChildFund.Infrastructure.Cms.Constants;
 using System.ComponentModel.DataAnnotations;
 
 namespace ChildFund.Features.MyAccount.OrderConfirmation

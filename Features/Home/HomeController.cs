@@ -1,14 +1,13 @@
-﻿using ChildFund.Core;
-using EPiServer.Web.Mvc;
-using Microsoft.AspNetCore.Mvc;
+﻿using ChildFund.Features.Shared.ViewModels;
+using ChildFund.Infrastructure.Cms.Extensions;
 
 namespace ChildFund.Features.Home
 {
-    public class HomeController(IChildFundClient client) : PageController<HomePage>
+    public class HomeController : PageController<HomePage>
     {
-        public async Task<ActionResult> Index(HomePage currentContent)
+        public Task<IActionResult> Index(HomePage currentContent)
         {
-            return View("~/Features/Home/Index.cshtml", currentContent);
-        } 
+            return Task.FromResult<IActionResult>(this.View(currentContent, ContentViewModel.Create(currentContent)));
+        }
     }
 }

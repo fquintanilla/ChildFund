@@ -1,10 +1,8 @@
 ﻿using ChildFund.Infrastructure.Cms.Settings;
-using EPiServer.Web;
-using EPiServer.ServiceLocation;
 
 namespace ChildFund.Infrastructure
 {
-    public class ContentInstaller(
+	public class ContentInstaller(
         ISettingsService settingsService)
         : IBlockingFirstRequestInitializer
     {
