@@ -64,6 +64,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="appsettings.Development.json.example" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.Development.json.example" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ChildFund.Services\ChildFund.Services.csproj" />
   </ItemGroup>
 </Project>
