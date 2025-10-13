@@ -1,4 +1,5 @@
 ﻿using Advanced.CMS.GroupingHeader;
+using ChildFund.Web.Features.CatalogContent.Variant;
 using ChildFund.Web.Features.NamedCarts.DefaultCart;
 using ChildFund.Web.Features.Shared.Pages;
 using ChildFund.Web.Infrastructure.Cms.Attributes;
@@ -63,6 +64,11 @@ public class ReferencePageSettings : SettingsBase
     [AllowedTypes(typeof(CartPage))]
     [Display(Name = "Basket page", GroupName = TabNames.SiteStructure, Order = 60)]
     public virtual ContentReference CartPage { get; set; }
+
+    [CultureSpecific]
+    [AllowedTypes(typeof(SponsorshipVariant))]
+    [Display(Name = "Sponsorship Variant", GroupName = TabNames.SiteStructure, Order = 50)]
+    public virtual ContentReference SponsorshipVariant { get; set; }
     #endregion
 
     #region Mail templates

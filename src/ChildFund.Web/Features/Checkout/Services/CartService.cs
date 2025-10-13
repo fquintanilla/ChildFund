@@ -1,5 +1,6 @@
 using ChildFund.Web.Features.Checkout.ViewModels;
 using ChildFund.Web.Features.NamedCarts;
+using ChildFund.Web.Infrastructure.Commerce;
 using ChildFund.Web.Infrastructure.Commerce.Extensions;
 using ChildFund.Web.Infrastructure.Commerce.Markets;
 using EPiServer.Commerce.Catalog.Linking;
@@ -7,7 +8,6 @@ using EPiServer.Security;
 using Mediachase.Commerce.Customers;
 using Mediachase.Commerce.Inventory;
 using Mediachase.Commerce.Security;
-using ReferenceConverter = Mediachase.Commerce.Catalog.ReferenceConverter;
 
 namespace ChildFund.Web.Features.Checkout.Services
 {
@@ -19,7 +19,7 @@ namespace ChildFund.Web.Features.Checkout.Services
         IOrderRepository orderRepository,
         IPromotionEngine promotionEngine,
         ICurrentMarket currentMarket,
-        ReferenceConverter referenceConverter,
+        Mediachase.Commerce.Catalog.ReferenceConverter referenceConverter,
         IContentLoader contentLoader,
         IRelationRepository relationRepository,
         IWarehouseRepository warehouseRepository,
@@ -27,7 +27,6 @@ namespace ChildFund.Web.Features.Checkout.Services
         ICurrencyService currencyService)
         : ICartService
     {
-        private readonly string VariantOptionCodesProperty = "VariantOptionCodes";
         private readonly CustomerContext _customerContext = CustomerContext.Current;
 
         public string DefaultCartName => "Default" + SiteDefinition.Current.StartPage.ID;
@@ -52,10 +51,10 @@ namespace ChildFund.Web.Features.Checkout.Services
         {
             var contentLink = referenceConverter.GetContentLink(requestParams.Code);
             var entryContent = contentLoader.Get<EntryContentBase>(contentLink);
-            return AddToCart(cart, entryContent, requestParams.Quantity, requestParams.Store, requestParams.SelectedStore, requestParams.DynamicCodes);
+            return AddToCart(cart, entryContent, requestParams.Quantity, requestParams.Store, requestParams.SelectedStore, requestParams.ChildId, requestParams.ChildName);
         }
 
-        public AddToCartResult AddToCart(ICart cart, EntryContentBase entryContent, decimal quantity, string deliveryMethod, string warehouseCode, List<string> dynamicVariantOptionCodes)
+        public AddToCartResult AddToCart(ICart cart, EntryContentBase entryContent, decimal quantity, string deliveryMethod, string warehouseCode, string? childId, string? childName)
         {
             var result = new AddToCartResult();
             var contact = PrincipalInfo.CurrentPrincipal.GetCustomerContact();
@@ -81,7 +80,7 @@ namespace ChildFund.Web.Features.Checkout.Services
                 foreach (var relation in relationRepository.GetChildren<BundleEntry>(entryContent.ContentLink))
                 {
                     var entry = contentLoader.Get<EntryContentBase>(relation.Child);
-                    var recursiveResult = AddToCart(cart, entry, (relation.Quantity ?? 1) * quantity, deliveryMethod, warehouseCode, dynamicVariantOptionCodes);
+                    var recursiveResult = AddToCart(cart, entry, (relation.Quantity ?? 1) * quantity, deliveryMethod, warehouseCode, childId, childName);
                     if (recursiveResult.EntriesAddedToCart)
                     {
                         result.EntriesAddedToCart = true;
@@ -128,18 +127,31 @@ namespace ChildFund.Web.Features.Checkout.Services
                 }
             }
 
-            var lineItem = shipment.LineItems.FirstOrDefault(x => x.Code == entryContent.Code);
+            var lineItem = shipment.LineItems
+                .FirstOrDefault(x => x.Code == entryContent.Code &&
+                                     string.Equals(x.Properties?[Constant.LineItemFields.ChildId] as string, childId ?? string.Empty, StringComparison.OrdinalIgnoreCase));
+
             decimal originalLineItemQuantity = 0;
 
             if (lineItem == null)
             {
                 lineItem = cart.CreateLineItem(entryContent.Code, orderGroupFactory);
-                var lineDisplayName = entryContent.DisplayName;
-                if (dynamicVariantOptionCodes?.Count > 0)
+
+                // Sponsorship metadata
+                if (!string.IsNullOrWhiteSpace(childId))
                 {
-                    lineItem.Properties[VariantOptionCodesProperty] = string.Join(",", dynamicVariantOptionCodes.OrderBy(x => x));
-                    lineDisplayName += " - " + lineItem.Properties[VariantOptionCodesProperty];
+                    lineItem.Properties[Constant.LineItemFields.ChildId] = childId;
                 }
+
+                if (!string.IsNullOrWhiteSpace(childName))
+                {
+                    lineItem.Properties[Constant.LineItemFields.ChildName] = childName;
+                }
+
+                // Nice display name including the child for clarity in cart/checkout
+                var lineDisplayName = string.IsNullOrWhiteSpace(childName)
+                    ? entryContent.DisplayName
+                    : $"{entryContent.DisplayName} - {childName}";
 
                 lineItem.DisplayName = lineDisplayName;
                 lineItem.Quantity = quantity;
@@ -147,32 +159,8 @@ namespace ChildFund.Web.Features.Checkout.Services
             }
             else
             {
-                if (lineItem.Properties[VariantOptionCodesProperty] != null)
-                {
-                    var variantOptionCodesLineItem = lineItem.Properties[VariantOptionCodesProperty].ToString().Split(',');
-                    var intersectCodes = variantOptionCodesLineItem.Intersect(dynamicVariantOptionCodes);
-
-                    if (intersectCodes != null && intersectCodes.Any()
-                        && intersectCodes.Count() == variantOptionCodesLineItem.Length
-                        && intersectCodes.Count() == dynamicVariantOptionCodes.Count)
-                    {
-                        originalLineItemQuantity = lineItem.Quantity;
-                        cart.UpdateLineItemQuantity(shipment, lineItem, lineItem.Quantity + quantity);
-                    }
-                    else
-                    {
-                        lineItem = cart.CreateLineItem(entryContent.Code, orderGroupFactory);
-                        lineItem.Properties[VariantOptionCodesProperty] = string.Join(",", dynamicVariantOptionCodes.OrderBy(x => x));
-                        lineItem.DisplayName = entryContent.DisplayName + " - " + lineItem.Properties[VariantOptionCodesProperty];
-                        lineItem.Quantity = quantity;
-                        cart.AddLineItem(shipment, lineItem);
-                    }
-                }
-                else
-                {
-                    originalLineItemQuantity = lineItem.Quantity;
-                    cart.UpdateLineItemQuantity(shipment, lineItem, lineItem.Quantity + quantity);
-                }
+                originalLineItemQuantity = lineItem.Quantity;
+                cart.UpdateLineItemQuantity(shipment, lineItem, lineItem.Quantity + quantity);
             }
 
             var validationIssues = ValidateCart(cart);

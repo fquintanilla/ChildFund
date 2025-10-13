@@ -7,7 +7,8 @@ namespace ChildFund.Web.Features.Home
     {
         public Task<IActionResult> Index(HomePage currentContent)
         {
-            return Task.FromResult<IActionResult>(this.View(currentContent, ContentViewModel.Create(currentContent)));
+            var model = ContentViewModel.Create(currentContent);
+            return Task.FromResult<IActionResult>(this.View(currentContent, model));
         }
     }
 }

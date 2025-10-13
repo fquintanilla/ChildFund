@@ -21,7 +21,10 @@ using EPiServer.Commerce.Internal.Migration;
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
 using EPiServer.Globalization;
+using Mediachase.Commerce.Orders;
+using Mediachase.MetaDataPlus.Configurator;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Constant = ChildFund.Web.Infrastructure.Commerce.Constant;
 
 namespace ChildFund.Web.Infrastructure.Initialization
 {
@@ -102,13 +105,50 @@ namespace ChildFund.Web.Infrastructure.Initialization
             }
 
             context.InitializeFoundationCommerce();
-            context.InitComplete += ContextOnInitComplete;
+            context.InitComplete += OnInitComplete;
         }
 
-        void IInitializableModule.Uninitialize(InitializationEngine context) =>
-            context.InitComplete -= ContextOnInitComplete;
+        public void Uninitialize(InitializationEngine context)
+        {
+            context.InitComplete -= OnInitComplete;
+        }
 
-        private void ContextOnInitComplete(object sender, EventArgs eventArgs) =>
+        private void OnInitComplete(object sender, EventArgs e)
+        {
             _services.AddTransient<ContentAreaRenderer, CustomContentAreaRenderer>();
+
+            var context = OrderContext.MetaDataContext;
+            var lineItemMetaClass = OrderContext.Current.LineItemMetaClass;
+
+            // Define all fields you want to add
+            var metaFields = new[]
+            {
+                new { Name = Constant.LineItemFields.ChildId, DisplayName = "Child Id", Type = MetaDataType.ShortString, Length = 64 },
+                new { Name = Constant.LineItemFields.ChildName, DisplayName = "Child Name", Type = MetaDataType.LongString, Length = 256 }
+            };
+
+            foreach (var f in metaFields)
+            {
+                var field = MetaField.Load(context, f.Name)
+                            ?? MetaField.Create(
+                                context,
+                                lineItemMetaClass.Namespace,
+                                f.Name,
+                                f.DisplayName,
+                                string.Empty,
+                                f.Type,
+                                f.Length,
+                                allowNulls: true,
+                                multiLanguageValue: false,
+                                allowSearch: true,
+                                isEncrypted: false
+                            );
+
+                if (lineItemMetaClass.MetaFields.All(x => x.Id != field.Id))
+                {
+                    lineItemMetaClass.AddField(field);
+                }
+            }
+        }
     }
 }
