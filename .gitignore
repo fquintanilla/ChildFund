@@ -87,7 +87,7 @@ src/ChildFund.Web/modules/
 /src/ChildFund.Web/App_Data/*.txt
 /src/ChildFund.Web/App_Data/blobs
 /deploy/*.pkg
-/src/ChildFund.Web/appsettings.local.json
 /src/ChildFund.Web/wwwroot/logs
 /src/ChildFund.Web/Properties/PublishProfiles/LocalPublish.pubxml
 /src/ChildFund.Web/Logs
+/src/ChildFund.Web/appsettings.Development.json
