@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.36227.8
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChildFund", "ChildFund.csproj", "{A61C7309-8BF6-4BE5-958D-056783A9E560}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChildFund.Web", "src\ChildFund.Web\ChildFund.Web.csproj", "{A61C7309-8BF6-4BE5-958D-056783A9E560}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

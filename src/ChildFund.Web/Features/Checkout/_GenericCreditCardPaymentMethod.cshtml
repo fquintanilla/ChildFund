@@ -1,0 +1,59 @@
+﻿@model ChildFund.Web.Features.Checkout.Payments.GenericCreditCardPaymentOption
+
+@Html.HiddenFor(m => m.CardType)
+@Html.HiddenFor(m => m.UseSelectedCreditCard, new { value = false }) <!-- Always new card -->
+
+<div class="row">
+    <div class="col-12">
+        <fieldset class="border rounded p-3 mb-3">
+            <legend class="float-none w-auto px-2 fs-6 mb-0">Credit Card Details</legend>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.CreditCardName, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.CreditCardName, new { @class = "form-control", autocomplete = "cc-name", placeholder = "Name on card" })
+                @Html.ValidationMessageFor(m => m.CreditCardName, null, new { @class = "text-danger small" })
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.CreditCardNumber, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.CreditCardNumber, new
+                        {
+                            @class = "form-control",
+                            inputmode = "numeric",
+                            autocomplete = "cc-number",
+                            placeholder = "•••• •••• •••• ••••"
+                        })
+                    @Html.ValidationMessageFor(m => m.CreditCardNumber, null, new { @class = "text-danger small" })
+                </div>
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.CreditCardSecurityCode, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.CreditCardSecurityCode, new
+                        {
+                            @class = "form-control",
+                            inputmode = "numeric",
+                            maxlength = "4",
+                            autocomplete = "cc-csc",
+                            placeholder = "CVC"
+                        })
+                    @Html.ValidationMessageFor(m => m.CreditCardSecurityCode, null, new { @class = "text-danger small" })
+                </div>
+            </div>
+
+            <div class="row g-3 mt-1">
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.ExpirationMonth, new { @class = "form-label" })
+                    @Html.DropDownListFor(m => m.ExpirationMonth, Model.Months,
+                             new { @class = "form-select", autocomplete = "cc-exp-month" })
+                    @Html.ValidationMessageFor(m => m.ExpirationMonth, null, new { @class = "text-danger small" })
+                </div>
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.ExpirationYear, new { @class = "form-label" })
+                    @Html.DropDownListFor(m => m.ExpirationYear, Model.Years,
+                             new { @class = "form-select", autocomplete = "cc-exp-year" })
+                    @Html.ValidationMessageFor(m => m.ExpirationYear, null, new { @class = "text-danger small" })
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</div>
