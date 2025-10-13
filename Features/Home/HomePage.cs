@@ -1,6 +1,6 @@
-﻿using ChildFund.Features.Shared;
-using System.ComponentModel.DataAnnotations;
-using ChildFund.Infrastructure;
+﻿using System.ComponentModel.DataAnnotations;
+using ChildFund.Infrastructure.Cms.Constants;
+using ChildFund.Features.Shared.Pages;
 
 namespace ChildFund.Features.Home
 {

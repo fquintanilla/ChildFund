@@ -1,16 +1,13 @@
 ﻿using ChildFund.Features.Checkout.ViewModels;
 using ChildFund.Features.MyAccount.AddressBook;
 using ChildFund.Infrastructure.Commerce.Markets;
-using EPiServer.Commerce.Catalog.ContentTypes;
-using EPiServer.Commerce.Order;
 using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders;
-using Mediachase.Commerce;
-using Mediachase.Commerce.Catalog;
+using ReferenceConverter = Mediachase.Commerce.Catalog.ReferenceConverter;
 
 namespace ChildFund.Features.Checkout.Services
 {
-    public class ShipmentViewModelFactory(
+	public class ShipmentViewModelFactory(
         IContentLoader contentLoader,
         IShippingService shippingService,
         LanguageService languageService,

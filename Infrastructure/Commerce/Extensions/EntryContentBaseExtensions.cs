@@ -1,18 +1,12 @@
-﻿using ChildFund.Infrastructure.Cms;
-using EPiServer.Commerce.Catalog.ContentTypes;
+﻿using ChildFund.Infrastructure.Cms.Services;
 using EPiServer.Commerce.Catalog.Linking;
-using EPiServer.Commerce.SpecializedProperties;
-using EPiServer.ServiceLocation;
-using EPiServer.Web.Routing;
-using Mediachase.Commerce.Catalog;
 using Mediachase.Commerce.InventoryService;
 using Mediachase.Commerce.Markets;
-using Mediachase.Commerce.Pricing;
-using Mediachase.Commerce;
+using ReferenceConverter = Mediachase.Commerce.Catalog.ReferenceConverter;
 
 namespace ChildFund.Infrastructure.Commerce.Extensions
 {
-    public static class EntryContentBaseExtensions
+	public static class EntryContentBaseExtensions
     {
         private const int MaxHistory = 10;
         private const string Delimiter = "^!!^";

@@ -1,4 +1,4 @@
-﻿using ChildFund.Infrastructure.Cms;
+﻿using ChildFund.Infrastructure.Cms.Services;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using Mediachase.Commerce;

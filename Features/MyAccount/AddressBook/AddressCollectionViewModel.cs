@@ -1,4 +1,5 @@
 ﻿using ChildFund.Features.Shared;
+using ChildFund.Features.Shared.ViewModels;
 
 namespace ChildFund.Features.MyAccount.AddressBook
 {

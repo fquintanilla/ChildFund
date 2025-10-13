@@ -1,22 +1,16 @@
-﻿using ChildFund.Features.Checkout.Payments;
+﻿using ChildFund.Core.Settings;
+using ChildFund.Features.Checkout.Payments;
 using ChildFund.Features.Checkout.Services;
 using ChildFund.Features.Checkout.ViewModels;
 using ChildFund.Features.MyAccount.AddressBook;
-using ChildFund.Features.Settings;
 using ChildFund.Infrastructure.Cms.Settings;
 using ChildFund.Infrastructure.Commerce;
 using ChildFund.Infrastructure.Commerce.Customer.Services;
 using ChildFund.Infrastructure.Helpers;
-using EPiServer.Commerce.Order;
-using EPiServer.Framework.Localization;
-using EPiServer.Web.Mvc;
-using Mediachase.Commerce.Shared;
-using Mediachase.Commerce;
-using Microsoft.AspNetCore.Mvc;
 
 namespace ChildFund.Features.Checkout
 {
-    public class CheckoutController(ICartService cartService,
+	public class CheckoutController(ICartService cartService,
         OrderSummaryViewModelFactory orderSummaryViewModelFactory,
         IAddressBookService addressBookService,
         CheckoutViewModelFactory checkoutViewModelFactory,

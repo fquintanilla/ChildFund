@@ -1,4 +1,4 @@
-﻿using ChildFund.Features.Shared;
+﻿using ChildFund.Features.Shared.Pages;
 using System.ComponentModel.DataAnnotations;
 
 namespace ChildFund.Features.MyAccount.ResetPassword

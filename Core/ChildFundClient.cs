@@ -3,7 +3,6 @@ using ChildFund.Core.Http;
 using ChildFund.Core.Models;
 using ChildFund.Core.Options;
 using Microsoft.Extensions.Options;
-using EPiServer.ServiceLocation;
 
 namespace ChildFund.Core
 {

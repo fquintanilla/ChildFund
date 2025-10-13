@@ -1,22 +1,13 @@
-﻿using ChildFund.Features.CatalogContent.Variant;
+﻿using ChildFund.Features.CatalogContent.Services;
+using ChildFund.Features.CatalogContent.Variant;
 using ChildFund.Features.Checkout;
-using EPiServer.Commerce.Catalog.ContentTypes;
-using EPiServer.Commerce.Catalog.Linking;
 using EPiServer.Commerce.Catalog;
-using EPiServer.Commerce.Marketing;
-using EPiServer.Filters;
-using EPiServer.Web.Routing;
-using Mediachase.Commerce.Catalog;
-using Mediachase.Commerce.Pricing;
-using Mediachase.Commerce;
-using System.Text.RegularExpressions;
-using System.Text;
-using EPiServer.ServiceLocation;
-using ChildFund.Features.CatalogContent.Services;
+using EPiServer.Commerce.Catalog.Linking;
+using ReferenceConverter = Mediachase.Commerce.Catalog.ReferenceConverter;
 
 namespace ChildFund.Features.CatalogContent
 {
-    public static class Extensions
+	public static class Extensions
     {
         private static readonly Lazy<ReferenceConverter> ReferenceConverter =
             new Lazy<ReferenceConverter>(() => ServiceLocator.Current.GetInstance<ReferenceConverter>());

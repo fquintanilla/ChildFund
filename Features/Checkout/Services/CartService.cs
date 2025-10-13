@@ -1,23 +1,17 @@
+using ChildFund.Features.Checkout.ViewModels;
+using ChildFund.Features.NamedCarts;
+using ChildFund.Infrastructure.Commerce.Extensions;
+using ChildFund.Infrastructure.Commerce.Markets;
 using EPiServer.Commerce.Catalog.Linking;
 using EPiServer.Security;
 using Mediachase.Commerce.Customers;
 using Mediachase.Commerce.Inventory;
 using Mediachase.Commerce.Security;
-using System.Text;
-using ChildFund.Features.Checkout.ViewModels;
-using ChildFund.Features.NamedCarts;
-using ChildFund.Infrastructure.Commerce.Markets;
-using EPiServer.Commerce.Catalog.ContentTypes;
-using EPiServer.Commerce.Marketing;
-using EPiServer.Commerce.Order;
-using EPiServer.Web;
-using Mediachase.Commerce;
-using Mediachase.Commerce.Catalog;
-using ChildFund.Infrastructure.Commerce.Extensions;
+using ReferenceConverter = Mediachase.Commerce.Catalog.ReferenceConverter;
 
 namespace ChildFund.Features.Checkout.Services
 {
-    public class CartService(
+	public class CartService(
         IOrderGroupFactory orderGroupFactory,
         IPlacedPriceProcessor placedPriceProcessor,
         IInventoryProcessor inventoryProcessor,

@@ -1,14 +1,10 @@
 ﻿using ChildFund.Features.Checkout;
-using EPiServer.Commerce.Marketing;
-using EPiServer.Commerce.Order;
-using Mediachase.Commerce.Catalog;
 using Mediachase.Commerce.Markets;
-using Mediachase.Commerce.Pricing;
-using Mediachase.Commerce;
+using ReferenceConverter = Mediachase.Commerce.Catalog.ReferenceConverter;
 
 namespace ChildFund.Features.CatalogContent.Services
 {
-    public interface IPromotionService
+	public interface IPromotionService
     {
         IList<IPriceValue> GetDiscountPriceList(IEnumerable<CatalogKey> catalogKeys, MarketId marketId, Currency currency);
         IPriceValue GetDiscountPrice(CatalogKey catalogKey, MarketId marketId, Currency currency);
