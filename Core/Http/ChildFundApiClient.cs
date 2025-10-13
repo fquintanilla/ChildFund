@@ -28,6 +28,21 @@ namespace ChildFund.Core.Http
             return (await JsonSerializer.DeserializeAsync<T>(stream, jsonOptions ?? JsonDefaults.Options, ct))!;
         }
 
+        protected async Task<T> PostAsync<T>(string relativePath, object? body = null, JsonSerializerOptions? jsonOptions = null, CancellationToken ct = default)
+        {
+            await EnsureAuthAsync(ct);
+            using var content = body is null
+                ? null
+                : new StringContent(
+                    JsonSerializer.Serialize(body, jsonOptions ?? JsonDefaults.Options),
+                    System.Text.Encoding.UTF8,
+                    "application/json");
+            using var resp = await Http.PostAsync(relativePath, content, ct);
+            resp.EnsureSuccessStatusCode();
+            var stream = await resp.Content.ReadAsStreamAsync(ct);
+            return (await JsonSerializer.DeserializeAsync<T>(stream, jsonOptions ?? JsonDefaults.Options, ct))!;
+        }
+
         private async Task EnsureAuthAsync(CancellationToken ct)
         {
             var header = await _tokenProvider.GetAuthHeaderAsync(ct);

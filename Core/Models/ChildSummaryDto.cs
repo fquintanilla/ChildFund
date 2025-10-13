@@ -2,14 +2,14 @@
 
 namespace ChildFund.Core.Models
 {
-    public sealed class ChildSummaryDto
+    public class ChildSummaryDto
     {
 
         [JsonPropertyName("<CountryName>k__BackingField")]
         public string? CountryName { get; set; }
 
         [JsonPropertyName("<DOB>k__BackingField")]
-        public DateTime? DateOfBirth { get; set; }
+        public string? DateOfBirth { get; set; }
 
         [JsonPropertyName("<age>k__BackingField")]
         public int? Age { get; set; }
@@ -30,6 +30,6 @@ namespace ChildFund.Core.Models
         public int? MonthlySponsorship { get; set; }
 
         [JsonPropertyName("<childphoto>k__BackingField")]
-        public int? ChildPhoto { get; set; }
+        public string? ChildPhoto { get; set; }
     }
 }

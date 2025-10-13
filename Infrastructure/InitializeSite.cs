@@ -21,6 +21,9 @@ using EPiServer.Framework.Initialization;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using Mediachase.Commerce;
+using Mediachase.Commerce.Orders;
+using Mediachase.MetaDataPlus.Configurator;
+using Constant = ChildFund.Infrastructure.Commerce.Constant;
 
 namespace ChildFund.Infrastructure
 {
@@ -98,11 +101,48 @@ namespace ChildFund.Infrastructure
             }
 
             context.InitializeFoundationCommerce();
+            context.InitComplete += AddMetaFieldsToLineItem;
         }
         
         public void Uninitialize(InitializationEngine context)
         {
             
+        }
+
+        private void AddMetaFieldsToLineItem(object sender, EventArgs e)
+        {
+            var context = OrderContext.MetaDataContext;
+            var lineItemMetaClass = OrderContext.Current.LineItemMetaClass;
+
+            // Define all fields you want to add
+            var metaFields = new[]
+            {
+                new { Name = Constant.LineItemFields.ChildId, DisplayName = "Child Id", Type = MetaDataType.ShortString, Length = 64 },
+                new { Name = Constant.LineItemFields.ChildName, DisplayName = "Child Name", Type = MetaDataType.LongString, Length = 256 }
+            };
+
+            foreach (var f in metaFields)
+            {
+                var field = MetaField.Load(context, f.Name)
+                            ?? MetaField.Create(
+                                context,
+                                lineItemMetaClass.Namespace,
+                                f.Name,
+                                f.DisplayName,
+                                string.Empty,
+                                f.Type,
+                                f.Length,
+                                allowNulls: true,
+                                multiLanguageValue: false,
+                                allowSearch: true,
+                                isEncrypted: false
+                            );
+
+                if (lineItemMetaClass.MetaFields.All(x => x.Id != field.Id))
+                {
+                    lineItemMetaClass.AddField(field);
+                }
+            }
         }
     }
 }

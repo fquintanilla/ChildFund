@@ -8,6 +8,8 @@ namespace ChildFund.Features.Home
     {
         public async Task<ActionResult> Index(HomePage currentContent)
         {
+            //var child = await client.GetRandomKidsForWebAsync();
+
             return View("~/Features/Home/Index.cshtml", currentContent);
         } 
     }

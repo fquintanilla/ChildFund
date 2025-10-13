@@ -34,5 +34,11 @@
             public const string QuoteExpired = "QuoteExpired";
             public const string RequestQuoteStatus = "RequestQuoteStatus";
         }
+
+        public static class LineItemFields
+        {
+            public const string ChildId = "ChildId";
+            public const string ChildName = "ChildName";
+        }
     }
 }

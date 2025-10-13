@@ -41,5 +41,11 @@ namespace ChildFund.Features.NamedCarts
 
         // for DynamicProduct 
         public List<string> DynamicCodes { get; set; }
+
+        // Sponsorship
+        public string ChildId { get; set; }
+        public string ChildName { get; set; }
+
+
     }
 }

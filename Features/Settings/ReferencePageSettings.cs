@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using ChildFund.Features.CatalogContent.Variant;
 using ChildFund.Features.Checkout;
 using ChildFund.Features.MyAccount.OrderConfirmation;
 using ChildFund.Features.NamedCarts.DefaultCart;
@@ -22,18 +23,23 @@ namespace ChildFund.Features.Settings
 
         [CultureSpecific]
         [AllowedTypes(typeof(CheckoutPage))]
-        [Display(Name = "Checkout page", GroupName = TabNames.SiteStructure, Order = 170)]
+        [Display(Name = "Checkout page", GroupName = TabNames.SiteStructure, Order = 20)]
         public virtual ContentReference CheckoutPage { get; set; }
 
         [CultureSpecific]
         [AllowedTypes(typeof(CartPage))]
-        [Display(Name = "Shopping cart page", GroupName = TabNames.SiteStructure, Order = 60)]
+        [Display(Name = "Shopping cart page", GroupName = TabNames.SiteStructure, Order = 30)]
         public virtual ContentReference CartPage { get; set; }
 
         [CultureSpecific]
         [AllowedTypes(typeof(OrderConfirmationPage))]
-        [Display(Name = "Order confirmation page", GroupName = TabNames.SiteStructure, Order = 160)]
+        [Display(Name = "Order confirmation page", GroupName = TabNames.SiteStructure, Order = 40)]
         public virtual ContentReference OrderConfirmationPage { get; set; }
+
+        [CultureSpecific]
+        [AllowedTypes(typeof(SponsorshipVariant))]
+        [Display(Name = "Sponsorship Variant", GroupName = TabNames.SiteStructure, Order = 50)]
+        public virtual ContentReference SponsorshipVariant { get; set; }
 
         #endregion
 
@@ -47,6 +53,8 @@ namespace ChildFund.Features.Settings
         //[AllowedTypes(typeof(OrderConfirmationMailPage))]
         [Display(Name = "Order confirmation", GroupName = TabNames.MailTemplates, Order = 20)]
         public virtual ContentReference OrderConfirmationMail { get; set; }
+
+       
 
         #endregion
     }
