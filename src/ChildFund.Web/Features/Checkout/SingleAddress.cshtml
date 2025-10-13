@@ -1,0 +1,157 @@
+﻿@using ChildFund.Web.Features.Checkout.ViewModels
+@model ChildFund.Web.Features.Checkout.ViewModels.CheckoutViewModel
+
+@{
+    var index = (int)ViewData["ShipmentIndex"];
+    var instorePickupMethod = Model.Shipments[index].ShippingMethods.FirstOrDefault(x => x.IsInstorePickup);
+    var isPickup = instorePickupMethod != null && Model.Shipments[index].ShippingMethodId == instorePickupMethod.Id;
+    var isAuth = User.Identity.IsAuthenticated;
+    var useExisting = isAuth && Model.Shipments[index].ShippingAddressType == 1;
+}
+
+<div class="row @(isPickup ? "d-none" : "") jsShippingAddressRow">
+    <div class="col-12 jsChangeAddressCard" data-urlChangeAddress="@Url.Action("ChangeAddress", "Checkout")">
+        <!-- Select address mode -->
+        <div class="mb-3">
+            <div class="form-check">
+                @if (isAuth)
+                {
+                    @Html.RadioButtonFor(m => m.Shipments[index].ShippingAddressType, 1,
+                             new { @class = "form-check-input jsAddressMode", id = $"ship-existing-{index}" })
+                    <label class="form-check-label" for="@($"ship-existing-{index}")">
+                        @Html.TranslateFallback("/Checkout/Shipment/ExistingAddress", "Ship to existing address")
+                    </label>
+                }
+            </div>
+            <div class="form-check mt-2">
+                @Html.RadioButtonFor(m => m.Shipments[index].ShippingAddressType, 0,
+                         new { @class = "form-check-input jsAddressMode", id = $"ship-new-{index}" })
+                <label class="form-check-label" for="@($"ship-new-{index}")">
+                    @Html.TranslateFallback("/Checkout/Shipment/NewAddress", "Ship to new address")
+                </label>
+            </div>
+        </div>
+
+        <!-- Existing address dropdown -->
+        <div class="jsExistingWrap @(useExisting ? "" : "d-none") jsOldShippingAddressForm jsChangeAddress"
+             data-shipmentindex="@index" data-addresstype="@AddressType.Shipping">
+            <div class="mb-3">
+                @{
+                    var values = new List<KeyValuePair<string, string>>();
+                    foreach (var a in Model.AvailableAddresses)
+                    {
+                        values.Add(new KeyValuePair<string, string>(a.Name, a.AddressId));
+                    }
+                    var defaultShipping = Model.AvailableAddresses.FirstOrDefault(x => x.ShippingDefault);
+                    var defaultId = defaultShipping?.AddressId;
+                }
+                @(await Component.InvokeAsync("Dropdown", new
+                {
+                    list = values,
+                    selectedValue = Model.Shipments[index].Address.AddressId ?? defaultId,
+                    selectorClassItem = "",
+                    name = $"Shipments[{index}].Address.AddressId"
+                }))
+            </div>
+        </div>
+
+        <!-- New address form -->
+        <div class="jsNewWrap @(useExisting ? "d-none" : "") jsFormInputRequired jsNewShippingAddressForm">
+            @Html.HiddenFor(m => m.Shipments[index].Address.Name)
+            @Html.HiddenFor(m => m.Shipments[index].Address.DaytimePhoneNumber)
+            @Html.HiddenFor(m => m.Shipments[index].Address.BillingDefault)
+            @Html.HiddenFor(m => m.Shipments[index].Address.ShippingDefault)
+
+            <div class="row g-3">
+                <div class="col-12 col-md-6">
+                    @Html.LabelFor(m => m.Shipments[index].Address.FirstName, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.Shipments[index].Address.FirstName, new { @class = "form-control jsRequired" })
+                    @Html.ValidationMessageFor(m => m.Shipments[index].Address.FirstName, null, new { @class = "text-danger small" })
+                </div>
+                <div class="col-12 col-md-6">
+                    @Html.LabelFor(m => m.Shipments[index].Address.LastName, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.Shipments[index].Address.LastName, new { @class = "form-control jsRequired" })
+                    @Html.ValidationMessageFor(m => m.Shipments[index].Address.LastName, null, new { @class = "text-danger small" })
+                </div>
+
+                <div class="col-12 col-md-6">
+                    @Html.LabelFor(m => m.Shipments[index].Address.Email, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.Shipments[index].Address.Email, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Shipments[index].Address.Email, null, new { @class = "text-danger small" })
+                </div>
+                <div class="col-12 col-md-6">
+                    @Html.LabelFor(m => m.Shipments[index].Address.Organization, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.Shipments[index].Address.Organization, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Shipments[index].Address.Organization, null, new { @class = "text-danger small" })
+                </div>
+
+                <div class="col-12 col-md-6">
+                    @Html.LabelFor(m => m.Shipments[index].Address.Line1, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.Shipments[index].Address.Line1, new { @class = "form-control jsRequired" })
+                    @Html.ValidationMessageFor(m => m.Shipments[index].Address.Line1, null, new { @class = "text-danger small" })
+                </div>
+                <div class="col-12 col-md-6">
+                    @Html.LabelFor(m => m.Shipments[index].Address.Line2, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.Shipments[index].Address.Line2, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Shipments[index].Address.Line2, null, new { @class = "text-danger small" })
+                </div>
+
+                <div class="col-12 col-md-6">
+                    @Html.LabelFor(m => m.Shipments[index].Address.City, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.Shipments[index].Address.City, new { @class = "form-control jsChangeTaxAddress jsRequired" })
+                    @Html.ValidationMessageFor(m => m.Shipments[index].Address.City, null, new { @class = "text-danger small" })
+                </div>
+                <div class="col-12 col-md-6">
+                    @Html.LabelFor(m => m.Shipments[index].Address.PostalCode, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.Shipments[index].Address.PostalCode, new { @class = "form-control jsChangeTaxAddress jsRequired" })
+                    @Html.ValidationMessageFor(m => m.Shipments[index].Address.PostalCode, null, new { @class = "text-danger small" })
+                </div>
+            </div>
+        </div>
+
+        @* Validation summary for AddressId when required *@
+        @if (ViewData.ModelState[$"Shipments[{index}].Address.AddressId"]?.Errors?.Count > 0)
+        {
+            <div class="alert alert-danger mt-3" role="alert">
+                <strong>@Html.Raw("Shipping address is required!")</strong>
+            </div>
+        }
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Toggle helper: show one, hide the other, and disable inputs in hidden block
+        function setMode(container, useExisting) {
+            const existing = container.querySelector('.jsExistingWrap');
+            const fresh = container.querySelector('.jsNewWrap');
+
+            if (existing) {
+                existing.classList.toggle('d-none', !useExisting);
+                existing.querySelectorAll('input, select, textarea, button').forEach(el => el.disabled = !useExisting);
+            }
+            if (fresh) {
+                fresh.classList.toggle('d-none', useExisting);
+                fresh.querySelectorAll('input, select, textarea, button').forEach(el => el.disabled = useExisting);
+            }
+        }
+
+        document.querySelectorAll('.jsShippingAddressRow').forEach(row => {
+            const card = row.querySelector('.jsChangeAddressCard');
+            if (!card) return;
+
+            // Initialize from current selection
+            const radios = card.querySelectorAll('.jsAddressMode');
+            const selected = Array.from(radios).find(r => r.checked);
+            setMode(card, selected ? (selected.value === '1') : false);
+
+            // Bind change
+            radios.forEach(r => {
+                r.addEventListener('change', function () {
+                    setMode(card, this.value === '1');
+                });
+            });
+        });
+    });
+</script>

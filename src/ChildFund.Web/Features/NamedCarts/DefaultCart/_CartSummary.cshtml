@@ -1,0 +1,45 @@
+﻿@model ChildFund.Web.Features.Header.LargeCartViewModel
+
+<div class="card shadow-sm mt-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">
+            @Html.TranslateFallback("/Cart/Labels/ShoppingCartTotal", "Shopping Cart Total")
+        </h5>
+    </div>
+
+    <ul class="list-group list-group-flush fs-6">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>@Html.TranslateFallback("/Cart/Labels/Subtotal", "Subtotal")</span>
+            <span class="largecart-Subtotal fw-semibold">@Model.Subtotal.ToString()</span>
+        </li>
+
+        @if (Model.TotalDiscount.Amount > 0)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center text-danger">
+                <span>@Html.TranslateFallback("/Cart/Labels/DiscountsApplied", "Discount Applied")</span>
+                <span class="largecart-TotalDiscount fw-semibold">
+                    -@Model.TotalDiscount.ToString()
+                </span>
+            </li>
+        }
+
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>@Html.TranslateFallback("/Cart/Labels/TaxTotal", "Tax Total")</span>
+            <span class="largecart-TaxTotal">@Model.TaxTotal.ToString()</span>
+        </li>
+
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>@Html.TranslateFallback("/Cart/Labels/ShippingTotal", "Shipping Total")</span>
+            <span class="largecart-ShippingTotal">@Model.ShippingTotal.ToString()</span>
+        </li>
+
+        <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
+            <span class="fw-bold">
+                @Html.TranslateFallback("/Cart/Labels/Total", "Total")
+            </span>
+            <span class="fw-bold text-primary largecart-Total">
+                @Model.Total.ToString()
+            </span>
+        </li>
+    </ul>
+</div>

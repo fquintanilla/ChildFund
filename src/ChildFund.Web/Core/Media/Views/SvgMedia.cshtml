@@ -1,0 +1,37 @@
+﻿@using ChildFund.Web.Core.Media.ViewModels
+@model ChildFund.Web.Core.Media.ViewModels.SvgMediaDataViewModel
+
+@{
+    var imageViewModel = new ImageMediaDataViewModel
+            {
+                Name = Model.Name,
+                AltText = Model.Description,
+                Description = Model.Description,
+                ImageLink = Model.ImageLink,
+            };
+}
+
+@if (!string.IsNullOrEmpty(Model.LinkToContent))
+{
+    <a href="@(string.IsNullOrEmpty(Model.LinkToContent) ? "#" : Url.ContentUrl(Model.LinkToContent))">
+        @if (Model.UseHtmlTag)
+		{
+	        await Html.RenderPartialAsync("~/Core/Media/Views/ImageMedia.cshtml", imageViewModel);
+	    }
+        else
+        {
+            @Html.Raw(Model.Data)
+        }
+    </a>
+}
+else
+{
+    if (Model.UseHtmlTag)
+    {
+        await Html.RenderPartialAsync("~/Core/Media/Views/ImageMedia.cshtml", imageViewModel);
+    }
+    else
+    {
+        @Html.Raw(Model.Data)
+    }
+}

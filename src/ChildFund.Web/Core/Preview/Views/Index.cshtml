@@ -1,0 +1,10 @@
+﻿@model ChildFund.Web.Core.Preview.Models.PreviewModel
+
+@{
+    Layout = "~/Features/Shared/Views/_Layout.cshtml";
+}
+
+@foreach (var area in Model.Areas)
+{
+    @Html.DisplayFor(x => area.ContentArea, new { Tag = area.AreaTag })
+}

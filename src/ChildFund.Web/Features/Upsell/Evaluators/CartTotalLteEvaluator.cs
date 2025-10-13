@@ -1,0 +1,15 @@
+﻿using ChildFund.Web.Features.Upsell.Models;
+using System.Text.Json;
+
+namespace ChildFund.Web.Features.Upsell.Evaluators
+{
+    public class CartTotalLteEvaluator : IConditionEvaluator
+    {
+        public bool CanHandle(string op) => op.Equals("CartTotalLessOrEqual", StringComparison.OrdinalIgnoreCase);
+        public bool Evaluate(string op, JsonElement operand, CartContext ctx)
+        {
+            var threshold = operand.GetDecimal();
+            return ctx.CartTotal <= threshold;
+        }
+    }
+}
