@@ -1,7 +1,7 @@
 ﻿using ChildFund.Features.Home;
 using ChildFund.Features.MyAccount.OrderConfirmation;
-using ChildFund.Features.Shared;
-using ChildFund.Infrastructure;
+using ChildFund.Features.Shared.Pages;
+using ChildFund.Infrastructure.Cms.Constants;
 
 namespace ChildFund.Features.Checkout
 {

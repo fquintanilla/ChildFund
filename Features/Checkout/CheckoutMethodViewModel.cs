@@ -1,6 +1,7 @@
 ﻿using ChildFund.Features.Login;
 using ChildFund.Features.MyAccount.AddressBook;
 using ChildFund.Features.Shared;
+using ChildFund.Features.Shared.ViewModels;
 
 namespace ChildFund.Features.Checkout
 {

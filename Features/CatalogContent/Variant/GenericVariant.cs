@@ -1,11 +1,7 @@
-﻿using EPiServer.Commerce.Catalog.ContentTypes;
-using EPiServer.SpecializedProperties;
-using System.ComponentModel.DataAnnotations;
-using ChildFund.Features.CatalogContent.Infrastructure;
-using ChildFund.Infrastructure.Cms;
+﻿using ChildFund.Features.CatalogContent.Infrastructure;
+using ChildFund.Infrastructure.Cms.Constants;
 using EPiServer.Commerce.Catalog.DataAnnotations;
-using EPiServer.Web;
-using EPiServer.Shell.ObjectEditing;
+using TabNames = ChildFund.Infrastructure.Cms.Constants.TabNames;
 
 namespace ChildFund.Features.CatalogContent.Variant
 {
@@ -31,7 +27,7 @@ namespace ChildFund.Features.CatalogContent.Variant
         //[ClientEditor(ClientEditingClass = "foundation/editors/ColorPicker")]
         public virtual string PageTitleTextColor
         {
-            get { return this.GetPropertyValue(page => page.PageTitleTextColor) ?? Constant.ColorPicker.PageTitleTextColorDefault; }
+            get { return this.GetPropertyValue(page => page.PageTitleTextColor) ?? ColorPicker.PageTitleTextColorDefault; }
             set { this.SetPropertyValue(page => page.PageTitleTextColor, value); }
         }
 
@@ -42,42 +38,40 @@ namespace ChildFund.Features.CatalogContent.Variant
         //[ClientEditor(ClientEditingClass = "foundation/editors/ColorPicker")]
         public virtual string PageTitleTextBackgroundColor
         {
-            get { return this.GetPropertyValue(page => page.PageTitleTextBackgroundColor) ?? Constant.ColorPicker.PageTitleTextBackgroundColorDefault; }
+            get { return this.GetPropertyValue(page => page.PageTitleTextBackgroundColor) ?? ColorPicker.PageTitleTextBackgroundColorDefault; }
             set { this.SetPropertyValue(page => page.PageTitleTextBackgroundColor, value); }
         }
 
         [UIHint(UIHint.Image)]
         [Display(Name = "Image", GroupName = SystemTabNames.Content, Order = 30)]
         public virtual ContentReference ImageReference { get; set; }
-
         #endregion
 
         #region Settings
-
-        [Display(Name = "Hide site header", GroupName = ChildFund.Infrastructure.TabNames.Settings, Order = 100)]
+        [Display(Name = "Hide site header", GroupName = TabNames.Settings, Order = 100)]
         public virtual bool HideSiteHeader { get; set; }
 
-        [Display(Name = "Hide site footer", GroupName = ChildFund.Infrastructure.TabNames.Settings, Order = 200)]
+        [Display(Name = "Hide site footer", GroupName = TabNames.Settings, Order = 200)]
         public virtual bool HideSiteFooter { get; set; }
 
         [Searchable(false)]
-        [Display(Name = "Marketing Id", GroupName = ChildFund.Infrastructure.TabNames.Settings, Order = 10)]
+        [Display(Name = "Marketing Id", GroupName = TabNames.Settings, Order = 10)]
         public virtual string MarketingId { get; set; }
 
         [Searchable(false)]
-        [Display(Name = "Financial Code", GroupName = ChildFund.Infrastructure.TabNames.Settings, Order = 20)]
+        [Display(Name = "Financial Code", GroupName = TabNames.Settings, Order = 20)]
         public virtual string FinancialCode { get; set; }
 
         [Display(Name = "Exclude from results",
             Description = "This will determine whether or not to show on search",
-            GroupName = ChildFund.Infrastructure.TabNames.Settings,
+            GroupName = TabNames.Settings,
             Order = 40)]
         public virtual bool ExcludeFromSearch { get; set; }
 
         [Display(
             Name = "Recurrence",
             Order = 90,
-            GroupName = ChildFund.Infrastructure.TabNames.PurchaseSettings,
+            GroupName = TabNames.PurchaseSettings,
             Description = "Select one or more: One-time, Yearly, Monthly, Quarterly, Semi-Annually, Annually")]
         [SelectMany(SelectionFactoryType = typeof(RecurrenceSelectionFactory))]
         public virtual string Recurrence { get; set; }
@@ -85,7 +79,7 @@ namespace ChildFund.Features.CatalogContent.Variant
         [Display(
             Name = "Default Recurrence",
             Order = 100,
-            GroupName = ChildFund.Infrastructure.TabNames.PurchaseSettings,
+            GroupName = TabNames.PurchaseSettings,
             Description = "Shown by default to the buyer. Must be one of the selections above.")]
         [SelectOne(SelectionFactoryType = typeof(RecurrenceSelectionFactory))]
         public virtual string DefaultRecurrence { get; set; }
@@ -93,14 +87,14 @@ namespace ChildFund.Features.CatalogContent.Variant
         [Display(
             Name = "Is Quantity Configurable?",
             Order = 110,
-            GroupName = ChildFund.Infrastructure.TabNames.PurchaseSettings,
+            GroupName = TabNames.PurchaseSettings,
             Description = "Indicates whether the buyer can choose the quantity of this product.")]
         public virtual bool IsQuantityConfigurable { get; set; }
 
         [Display(
             Name = "Buyer Can Define Price?",
             Order = 120,
-            GroupName = ChildFund.Infrastructure.TabNames.PurchaseSettings,
+            GroupName = TabNames.PurchaseSettings,
             Description = "Indicates whether the buyer can enter a custom price instead of a fixed one.")]
         public virtual bool BuyerCanDefinePrice { get; set; }
 
@@ -108,23 +102,23 @@ namespace ChildFund.Features.CatalogContent.Variant
 
         #region Styles
 
-        [Display(Name = "CSS files", GroupName = ChildFund.Infrastructure.TabNames.Styles, Order = 100)]
+        [Display(Name = "CSS files", GroupName = TabNames.Styles, Order = 100)]
         public virtual LinkItemCollection CssFiles { get; set; }
 
         [Searchable(false)]
-        [Display(Name = "CSS", GroupName = ChildFund.Infrastructure.TabNames.Styles, Order = 200)]
+        [Display(Name = "CSS", GroupName = TabNames.Styles, Order = 200)]
         [UIHint(UIHint.Textarea)]
         public virtual string Css { get; set; }
 
         #endregion
-        
+
         #region Upsell Rules
 
         [CultureSpecific]
         [Display(
             Name = "Is Upsell Product",
             Order = 10,
-            GroupName = ChildFund.Infrastructure.TabNames.UpsellRules,
+            GroupName = TabNames.UpsellRules,
             Description = "Marks this variant as eligible for upsell logic.")]
         public virtual bool IsUpsell { get; set; }
 
@@ -132,7 +126,7 @@ namespace ChildFund.Features.CatalogContent.Variant
         [Display(
             Name = "Upsell Sequence",
             Order = 20,
-            GroupName = ChildFund.Infrastructure.TabNames.UpsellRules,
+            GroupName = TabNames.UpsellRules,
             Description = "Defines global priority for upsells. Lower values = higher priority.")]
         public virtual int UpsellSequence { get; set; }
 
@@ -140,7 +134,7 @@ namespace ChildFund.Features.CatalogContent.Variant
         [Display(
             Name = "Upsell Tags",
             Order = 30,
-            GroupName = ChildFund.Infrastructure.TabNames.UpsellRules,
+            GroupName = TabNames.UpsellRules,
             Description = "Freeform tags for grouping upsell items (e.g., 'emergency', 'premium', 'seasonal').")]
         [BackingType(typeof(PropertyStringList))]
         public virtual IList<string>? UpsellTags { get; set; }

@@ -1,4 +1,4 @@
-﻿@model ChildFund.Features.CatalogContent.Variant.GenericVariant
+﻿@model ChildFund.Features.CatalogContent.Variant.GenericVariantViewModel
 
 @{
     var addToCartUrl = Url.Action("AddToCart", "DefaultCart") ?? "";
@@ -8,9 +8,9 @@
 <article class="variant-page">
     <header class="variant-header">
         <h1 class="variant-title">
-            @(string.IsNullOrWhiteSpace(Model?.DisplayName) ? Model?.Name : Model?.DisplayName)
+            @(string.IsNullOrWhiteSpace(Model?.CurrentContent.DisplayName) ? Model?.CurrentContent.Name : Model?.CurrentContent.DisplayName)
         </h1>
-        <h2>@Model.Code</h2>
+        <h2>@Model.CurrentContent.Code</h2>
     </header>
 
     <!-- Include the header partial (seed with zero; JS will refresh on load and after add) -->
@@ -19,7 +19,7 @@
     </div>
 
     <section class="variant-actions">
-        <input type="hidden" id="variantCode" value="@Model?.Code" />
+        <input type="hidden" id="variantCode" value="@Model?.CurrentContent.Code" />
         <label for="qty" class="qty-label">Qty</label>
         <input id="qty" name="qty" type="number" min="1" value="1" class="qty-input" />
         <button id="btnAddToCart" type="button" class="btn-add" aria-label="Add to cart">Add to cart</button>

@@ -1,6 +1,8 @@
-﻿namespace ChildFund.Infrastructure.Cms.Extensions
+﻿using System.Text.RegularExpressions;
+
+namespace ChildFund.Infrastructure.Cms.Extensions
 {
-    public static class StringExtensions
+	public static class StringExtensions
     {
         public static bool IsLocalUrl(this string url, HttpRequest request)
         {
@@ -21,5 +23,15 @@
 
             return newStr + suffix;
         }
-    }
+
+        public static string StripHtml(this string html)
+        {
+	        if (string.IsNullOrEmpty(html))
+	        {
+		        return html;
+	        }
+
+	        return Regex.Replace(html, @"<(.|\n)*?>", string.Empty);
+        }
+	}
 }

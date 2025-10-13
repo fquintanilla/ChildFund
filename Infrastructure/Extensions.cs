@@ -4,11 +4,10 @@ using ChildFund.Features.MyOrganization;
 using ChildFund.Infrastructure.Commerce.Customer;
 using ChildFund.Infrastructure.Commerce.Customer.Services;
 using EPiServer.Commerce.Catalog.Linking;
-using EPiServer.ServiceLocation;
 
 namespace ChildFund.Infrastructure
 {
-    public static class Extensions
+	public static class Extensions
     {
         private static readonly Lazy<IContentRepository> _contentRepository =
             new Lazy<IContentRepository>(() => ServiceLocator.Current.GetInstance<IContentRepository>());

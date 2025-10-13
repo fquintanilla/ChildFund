@@ -1,9 +1,7 @@
 ﻿using ChildFund.Core;
+using ChildFund.Core.Settings;
 using ChildFund.Features.CatalogContent.Variant;
-using ChildFund.Features.Settings;
 using ChildFund.Infrastructure.Cms.Settings;
-using EPiServer.Web.Mvc;
-using Microsoft.AspNetCore.Mvc;
 
 namespace ChildFund.Features.Sponsorship
 {

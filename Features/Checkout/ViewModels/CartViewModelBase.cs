@@ -1,4 +1,5 @@
 ﻿using ChildFund.Features.Shared;
+using ChildFund.Features.Shared.ViewModels;
 using Mediachase.Commerce;
 
 namespace ChildFund.Features.Checkout.ViewModels

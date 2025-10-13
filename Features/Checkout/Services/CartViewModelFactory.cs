@@ -1,20 +1,17 @@
-﻿using ChildFund.Features.Checkout.ViewModels;
+﻿using ChildFund.Core.Settings;
+using ChildFund.Features.Checkout.ViewModels;
 using ChildFund.Features.Header;
 using ChildFund.Features.MyAccount.AddressBook;
 using ChildFund.Features.NamedCarts.DefaultCart;
-using ChildFund.Features.Settings;
 using ChildFund.Infrastructure.Cms.Settings;
 using ChildFund.Infrastructure.Commerce.Markets;
-using EPiServer.Commerce.Order;
 using EPiServer.Security;
-using EPiServer.Web.Routing;
-using Mediachase.Commerce;
 using Mediachase.Commerce.Security;
 using ReferenceConverter = Mediachase.Commerce.Catalog.ReferenceConverter;
 
 namespace ChildFund.Features.Checkout.Services
 {
-    public class CartViewModelFactory(
+	public class CartViewModelFactory(
         IContentLoader contentLoader,
         ICurrencyService currencyService,
         IOrderGroupCalculator orderGroupCalculator,

@@ -2,6 +2,7 @@
 using ChildFund.Features.MyAccount.AddressBook;
 using ChildFund.Features.NamedCarts.DefaultCart;
 using ChildFund.Features.Shared;
+using ChildFund.Features.Shared.ViewModels;
 using Mediachase.Commerce;
 
 namespace ChildFund.Features.Header

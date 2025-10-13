@@ -1,5 +1,5 @@
-﻿using ChildFund.Features.Shared;
-using ChildFund.Infrastructure;
+﻿using ChildFund.Infrastructure.Cms.Constants;
+using ChildFund.Features.Shared.Pages;
 
 namespace ChildFund.Features.Home
 {

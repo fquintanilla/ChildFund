@@ -1,9 +1,8 @@
-﻿using ChildFund.Infrastructure.Cms;
-using Mediachase.Commerce;
+﻿using ChildFund.Infrastructure.Cms.Services;
 
 namespace ChildFund.Infrastructure.Commerce.Markets
 {
-    public class CurrencyService(ICurrentMarket currentMarket, ICookieService cookieService) : ICurrencyService
+	public class CurrencyService(ICurrentMarket currentMarket, ICookieService cookieService) : ICurrencyService
     {
         private const string CurrencyCookie = "Currency";
 

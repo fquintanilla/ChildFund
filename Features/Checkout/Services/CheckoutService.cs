@@ -1,23 +1,17 @@
-﻿using EPiServer.Commerce.Marketing;
-using EPiServer.Commerce.Order;
-using EPiServer.Framework.Localization;
-using EPiServer.Logging;
-using EPiServer.Security;
-using EPiServer.Web.Routing;
-using Mediachase.Commerce.Customers;
-using Mediachase.Commerce.Orders.Exceptions;
-using Mediachase.Commerce.Orders.Managers;
-using Mediachase.Commerce.Orders;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.Collections.Specialized;
-using System.Globalization;
+﻿using ChildFund.Core.Settings;
 using ChildFund.Features.Checkout.ViewModels;
 using ChildFund.Features.MyAccount.AddressBook;
-using ChildFund.Features.Settings;
-using Mediachase.Commerce.Security;
-using ChildFund.Infrastructure.Commerce;
-using ChildFund.Features.Shared;
+using ChildFund.Infrastructure.Cms.Services;
 using ChildFund.Infrastructure.Cms.Settings;
+using ChildFund.Infrastructure.Commerce;
+using EPiServer.Logging;
+using EPiServer.Security;
+using Mediachase.Commerce.Customers;
+using Mediachase.Commerce.Orders;
+using Mediachase.Commerce.Orders.Exceptions;
+using Mediachase.Commerce.Orders.Managers;
+using Mediachase.Commerce.Security;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using ILogger = EPiServer.Logging.ILogger;
 
 namespace ChildFund.Features.Checkout.Services

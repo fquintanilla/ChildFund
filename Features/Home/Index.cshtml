@@ -1,4 +1,7 @@
-﻿@model ChildFund.Features.Home.HomePage
+﻿@using ChildFund.Features.Home
+@using ChildFund.Features.Shared.ViewModels
+@model ContentViewModel<HomePage>
+
 <h1>Home page</h1>
 
-@Html.PropertyFor(x => x.MainContentArea)
+@* @Html.PropertyFor(x => x.CurrentContent.MainContentArea) *@
