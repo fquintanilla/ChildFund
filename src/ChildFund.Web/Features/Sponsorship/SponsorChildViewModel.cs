@@ -1,4 +1,4 @@
-﻿using ChildFund.Web.Core.Models;
+﻿using ChildFund.Services.Models;
 
 namespace ChildFund.Web.Features.Sponsorship
 {

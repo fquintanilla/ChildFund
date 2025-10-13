@@ -62,4 +62,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\Translations\**\*" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ChildFund.Services\ChildFund.Services.csproj" />
+  </ItemGroup>
 </Project>

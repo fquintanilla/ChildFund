@@ -5,6 +5,8 @@ VisualStudioVersion = 17.8.36227.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChildFund.Web", "src\ChildFund.Web\ChildFund.Web.csproj", "{A61C7309-8BF6-4BE5-958D-056783A9E560}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChildFund.Services", "src\ChildFund.Services\ChildFund.Services.csproj", "{6E578296-6190-4F5F-AF76-1FEED8933DAE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,6 +20,12 @@ Global
 		{A61C7309-8BF6-4BE5-958D-056783A9E560}.Development|Any CPU.Build.0 = Development|Any CPU
 		{A61C7309-8BF6-4BE5-958D-056783A9E560}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A61C7309-8BF6-4BE5-958D-056783A9E560}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E578296-6190-4F5F-AF76-1FEED8933DAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E578296-6190-4F5F-AF76-1FEED8933DAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E578296-6190-4F5F-AF76-1FEED8933DAE}.Development|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E578296-6190-4F5F-AF76-1FEED8933DAE}.Development|Any CPU.Build.0 = Debug|Any CPU
+		{6E578296-6190-4F5F-AF76-1FEED8933DAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E578296-6190-4F5F-AF76-1FEED8933DAE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

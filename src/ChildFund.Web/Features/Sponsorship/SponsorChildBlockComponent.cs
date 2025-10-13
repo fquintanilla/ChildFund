@@ -1,11 +1,11 @@
-﻿using ChildFund.Web.Core;
+﻿using ChildFund.Services.Interfaces;
 using ChildFund.Web.Core.Settings;
 using ChildFund.Web.Features.CatalogContent.Variant;
 using ChildFund.Web.Infrastructure.Cms.Settings;
 
 namespace ChildFund.Web.Features.Sponsorship
 {
-    public class SponsorChildBlockComponent(IChildFundClient client,
+    public class SponsorChildBlockComponent(IChildInventoryClient client,
         ISettingsService settingsService,
         IContentLoader contentLoader) : AsyncBlockComponent<SponsorChildBlock>
     {

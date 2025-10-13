@@ -1,7 +1,7 @@
 using Advanced.CMS.GroupingHeader;
 using Baaijte.Optimizely.ImageSharp.Web;
+using ChildFund.Services.Extensions;
 using ChildFund.Web.Core.CustomRoutes.Error;
-using ChildFund.Web.Core.Extensions;
 using ChildFund.Web.Infrastructure;
 using ChildFund.Web.Infrastructure.Cms.Helpers;
 using ChildFund.Web.Infrastructure.Cms.Users;
@@ -9,6 +9,7 @@ using ChildFund.Web.Infrastructure.Commerce.Extensions;
 using ChildFund.Web.Infrastructure.Display;
 using ChildFund.Web.Infrastructure.Initialization;
 using ChildFund.Web.Infrastructure.Middlewares;
+using ChildFund.Web.Infrastructure.Rendering;
 using EPiServer.Cms.TinyMce;
 using EPiServer.Marketing.Testing.Web.Initializers;
 using Geta.Optimizely.Categories.Configuration;
@@ -23,7 +24,6 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Net.Security;
 using System.Text.Json.Serialization;
-using ChildFund.Web.Infrastructure.Rendering;
 using UNRVLD.ODP.VisitorGroups.Initilization;
 
 namespace ChildFund.Web;
@@ -121,7 +121,7 @@ public class Startup(
         services.AddMvc(o => o.Conventions.Add(new FeatureConvention()))
             .AddRazorOptions(ro => ro.ViewLocationExpanders.Add(new FeatureViewLocationExpander()));
 
-        services.AddChildFund(configuration);
+        services.AddChildFundServices(configuration);
 
         //Commerce
         services.AddCommerce();
