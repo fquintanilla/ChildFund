@@ -73,6 +73,7 @@ public abstract class ChildFundApiClient
         resp.EnsureSuccessStatusCode();
         
         await using var stream = await resp.Content.ReadAsStreamAsync(ct);
+
         return (await JsonSerializer.DeserializeAsync<T>(stream, jsonOptions ?? JsonDefaults.Options, ct))!;
     }
 

@@ -47,6 +47,13 @@ public static class ServiceCollectionExtensions
             .ConfigurePrimaryHttpMessageHandler(() => CreateHttpMessageHandler(options))
             .AddPolicyHandler(ChildFundApiClient.DefaultRetryPolicy());
 
+        services.AddHttpClient<IDonorPortalClient, DonorPortalClient>((sp, client) =>
+            {
+                ConfigureHttpClient(client, options);
+            })
+            .ConfigurePrimaryHttpMessageHandler(() => CreateHttpMessageHandler(options))
+            .AddPolicyHandler(ChildFundApiClient.DefaultRetryPolicy());
+
         return services;
     }
 
