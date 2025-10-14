@@ -49,12 +49,6 @@ namespace ChildFund.Web.Features.Checkout.Payments
                 return methods.Where(payment => !payment.SystemKeyword.Equals(Constant.Order.BudgetPayment));
             }
 
-            var cart = _cartService.LoadCart(_cartService.DefaultCartName, true)?.Cart;
-            if (cart != null && cart.IsQuoteCart() && currentContact.B2BUserRole == B2BUserRoles.Approver)
-            {
-                return methods.Where(payment => payment.SystemKeyword.Equals(Constant.Order.BudgetPayment));
-            }
-
             return currentContact.B2BUserRole == B2BUserRoles.Purchaser ? methods : methods.Where(payment => !payment.SystemKeyword.Equals(Constant.Order.BudgetPayment));
         }
     }

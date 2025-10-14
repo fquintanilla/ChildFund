@@ -35,7 +35,6 @@
                 <div class="col-12">
                     <label for="paymentFrequency" class="form-label">Payment Frequency<span class="text-danger">*</span></label>
                     @{
-                        var pf = Model.PaymentFrequencyValue ?? "OneTime";
                         var options = new[] { ("OneTime","One-Time"),("Monthly","Monthly"),("Yearly","Yearly") };
                     }
                     <select class="form-select" id="paymentFrequency" required>

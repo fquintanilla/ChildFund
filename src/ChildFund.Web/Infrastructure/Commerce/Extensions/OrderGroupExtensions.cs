@@ -8,12 +8,6 @@ namespace ChildFund.Web.Infrastructure.Commerce.Extensions
 
         #region OrderGroup extensions
 
-        public static bool IsQuoteCart(this OrderGroup orderGroup) => orderGroup is Cart && orderGroup.GetParentOrderId() != 0;
-
-        public static int GetParentOrderId(this OrderGroup orderGroup) => orderGroup.GetIntegerValue(Constant.Quote.ParentOrderGroupId);
-
-        public static int GetIntegerValue(this OrderGroup orderGroup, string fieldName) => orderGroup.GetIntegerValue(fieldName, 0);
-
         public static int GetIntegerValue(this OrderGroup orderGroup, string fieldName, int defaultValue)
         {
             if (orderGroup[fieldName] == null)
@@ -29,12 +23,6 @@ namespace ChildFund.Web.Infrastructure.Commerce.Extensions
         #endregion
 
         #region ICart extensions
-
-        public static bool IsQuoteCart(this ICart orderGroup) => orderGroup.GetParentOrderId() != 0;
-
-        public static int GetParentOrderId(this ICart orderGroup) => orderGroup.GetIntegerValue(Constant.Quote.ParentOrderGroupId);
-
-        public static int GetIntegerValue(this ICart orderGroup, string fieldName) => orderGroup.GetIntegerValue(fieldName, 0);
 
         public static int GetIntegerValue(this ICart orderGroup, string fieldName, int defaultValue)
         {

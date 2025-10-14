@@ -12,10 +12,7 @@ namespace ChildFund.Web.Features.Gifting
     {
         protected override async Task<IViewComponentResult> InvokeComponentAsync(GiftBlock currentContent)
         {
-            var vm = new GiftBlockViewModel
-            {
-                PaymentFrequencyValue = currentContent?.PaymentFrequency
-            };
+            var vm = new GiftBlockViewModel();
 
             // Build Occasion dropdown from the variants selected on the block
             if (currentContent?.Variants?.FilteredItems is not null)

@@ -156,30 +156,6 @@ namespace ChildFund.Web.Features.Checkout.Services
         {
             try
             {
-                if (cart.Properties[Constant.Quote.ParentOrderGroupId] != null)
-                {
-                    var orderLink = int.Parse(cart.Properties[Constant.Quote.ParentOrderGroupId].ToString());
-                    if (orderLink != 0)
-                    {
-                        var quoteOrder = _orderRepository.Load<IPurchaseOrder>(orderLink);
-                        if (quoteOrder.Properties[Constant.Quote.QuoteStatus] != null)
-                        {
-                            checkoutViewModel.QuoteStatus = quoteOrder.Properties[Constant.Quote.QuoteStatus].ToString();
-                            if (quoteOrder.Properties[Constant.Quote.QuoteStatus].ToString().Equals(Constant.Quote.RequestQuotationFinished))
-                            {
-                                _ = DateTime.TryParse(quoteOrder.Properties[Constant.Quote.QuoteExpireDate].ToString(),
-                                    out var quoteExpireDate);
-                                if (DateTime.Compare(DateTime.Now, quoteExpireDate) > 0)
-                                {
-                                    _orderRepository.Delete(cart.OrderLink);
-                                    _orderRepository.Delete(quoteOrder.OrderLink);
-                                    throw new InvalidOperationException("Quote Expired");
-                                }
-                            }
-                        }
-                    }
-                }
-
                 var processPayments = cart.ProcessPayments(_paymentProcessor, _orderGroupCalculator);
                 var unsuccessPayments = processPayments.Where(x => !x.IsSuccessful);
                 if (unsuccessPayments != null && unsuccessPayments.Any())

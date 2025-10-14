@@ -14,14 +14,5 @@
             Order = 10)]
         [AllowedTypes(typeof(VariationContent))]
         public virtual ContentArea Variants { get; set; }
-
-        // Single-select Payment Frequency via a selection factory
-        [Display(
-            Name = "Payment Frequency",
-            Description = "Limit the UI to this payment frequency",
-            GroupName = SystemTabNames.Content,
-            Order = 20)]
-        [SelectOne(SelectionFactoryType = typeof(PaymentFrequencySelectionFactory))]
-        public virtual string PaymentFrequency { get; set; }
     }
 }
