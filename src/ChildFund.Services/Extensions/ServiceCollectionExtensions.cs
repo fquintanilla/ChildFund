@@ -59,10 +59,11 @@ public static class ServiceCollectionExtensions
 
     /// <summary>
     /// Configures common HTTP client settings including base address, timeout, and headers.
+    /// Uses the effective base URL based on sync/async configuration.
     /// </summary>
     private static void ConfigureHttpClient(HttpClient client, ChildFundApiOptions options)
     {
-        client.BaseAddress = new Uri(options.BaseUrl.TrimEnd('/') + "/");
+        client.BaseAddress = new Uri(options.EffectiveBaseUrl.TrimEnd('/') + "/");
         client.Timeout = TimeSpan.FromSeconds(options.RequestTimeoutSeconds);
         client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
         client.DefaultRequestHeaders.Connection.ParseAdd("keep-alive");

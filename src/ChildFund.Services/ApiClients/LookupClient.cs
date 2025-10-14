@@ -22,7 +22,7 @@ public sealed class LookupClient : ChildFundApiClient, ILookupClient
     /// <summary>
     /// Retrieves all available countries from the ChildFund API.
     /// </summary>
-    public Task<CountryDto[]> GetAllCountriesAsync(CancellationToken ct = default) =>
-        GetAsync<CountryDto[]>("Lookup/GetAllCountries", JsonDefaults.Options, ct);
+    public Task<CountryDto[]?> GetAllCountriesAsync(CancellationToken ct = default) =>
+        GetAsync<CountryDto[]?>("Lookup/GetAllCountries", JsonDefaults.Options, ct);
 }
 

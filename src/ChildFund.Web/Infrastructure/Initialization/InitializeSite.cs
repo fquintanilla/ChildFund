@@ -17,6 +17,7 @@ using ChildFund.Web.Infrastructure.Commerce.Markets;
 using ChildFund.Web.Infrastructure.Commerce.Pricing;
 using ChildFund.Web.Infrastructure.Display;
 using ChildFund.Web.Infrastructure.Rendering;
+using ChildFund.Web.Repositories;
 using Episerver.Marketing.Connector.Framework.Services;
 using EPiServer.Commerce.Internal.Migration;
 using EPiServer.Framework;
@@ -73,6 +74,11 @@ namespace ChildFund.Web.Infrastructure.Initialization
             context.Services.AddTransient<CheckoutService>();
             context.Services.AddSingleton<ISettingsService, SettingsService>();
             context.Services.AddSingleton<ICreditCardService, CreditCardService>();
+
+            //Repositories to ChildFund services
+            context.Services.AddTransient<ILookupRepository, LookupRepository>();
+
+            // Repositories
             context.Services.AddTransient<IPaymentMethod, GenericCreditCardPaymentOption>();
             context.Services.AddSingleton<ServiceAccessor<IContentRouteHelper>>(locator =>
                 locator.GetInstance<IContentRouteHelper>);
@@ -81,7 +87,7 @@ namespace ChildFund.Web.Infrastructure.Initialization
             context.Services.AddSingleton<ICacheService, CacheService>();
             context.Services.AddSingleton<IConfigurationService, ConfigurationService>();
             context.Services.AddSingleton<IEncryptionService, EncryptionService>();
-            
+
             context.Services.Intercept<IPlacedPriceProcessor>((locator, defaultImplementation) =>
                 new CustomPlacedPriceProcessor(defaultImplementation));
 

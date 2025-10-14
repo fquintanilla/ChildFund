@@ -2,8 +2,14 @@ namespace ChildFund.Services;
 
 public sealed class ChildFundApiOptions
 {
-    /// <summary>Base URL, e.g. "https://pubwebapi.childfund.org/api/v1"</summary>
+    /// <summary>Base URL for synchronous endpoints, e.g. "https://pubwebapi.childfund.org/api/v1"</summary>
     public string BaseUrl { get; set; } = null!;
+
+    /// <summary>Base URL for asynchronous endpoints, e.g. "https://pubwebapi.childfund.org/api/v1"</summary>
+    public string AsyncBaseUrl { get; set; } = null!;
+
+    /// <summary>If true, uses AsyncBaseUrl and appends "Async" to method names. Default is false.</summary>
+    public bool UseAsyncEndpoints { get; set; } = false;
 
     /// <summary>Pre-encoded "User=..." payload expected by Authenticate endpoint.</summary>
     public string ApiKey { get; set; } = null!;
@@ -22,5 +28,10 @@ public sealed class ChildFundApiOptions
 
     /// <summary>Connection idle timeout in minutes. Default is 2.</summary>
     public int ConnectionIdleTimeoutMinutes { get; set; } = 2;
+
+    /// <summary>
+    /// Gets the effective base URL based on UseAsyncEndpoints setting.
+    /// </summary>
+    public string EffectiveBaseUrl => UseAsyncEndpoints ? AsyncBaseUrl : BaseUrl;
 }
 
