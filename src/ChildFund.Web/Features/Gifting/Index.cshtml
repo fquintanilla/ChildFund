@@ -1,0 +1,183 @@
+﻿@model ChildFund.Web.Features.Gifting.GiftBlockViewModel
+
+@{
+    var addToCartUrl = Url.Action("AddToCart", "DefaultCart") ?? "";
+    var miniCartDetailsUrl = Url.Action("MiniCartDetails", "DefaultCart") ?? "";
+    var formId = "giftForm_" + Guid.NewGuid().ToString("N");
+}
+
+<section class="container my-4 gift-block">
+    @Html.AntiForgeryToken()
+
+    <div class="card shadow-sm rounded-3">
+        <div class="card-body">
+            <h2 class="h4 mb-3">Give a Gift</h2>
+            <p class="text-muted">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam…
+            </p>
+
+            <form id="@formId" class="row g-3" novalidate>
+                <!-- Occasion (Variant) -->
+                <div class="col-12">
+                    <label for="occasion" class="form-label">Occasion<span class="text-danger">*</span></label>
+                    <select class="form-select" id="occasion" required>
+                        <option value="">Select an occasion</option>
+                        @foreach (var o in Model.OccasionOptions)
+                        {
+                            <!-- we’ll read the option’s text as the childName for the recipient dropdown only; for occasion we only need code -->
+                            <option value="@o.Value">@o.Text</option>
+                        }
+                    </select>
+                    <div class="invalid-feedback">Please select an occasion.</div>
+                </div>
+
+                <!-- Payment Frequency (single, from block setting) -->
+                <div class="col-12">
+                    <label for="paymentFrequency" class="form-label">Payment Frequency<span class="text-danger">*</span></label>
+                    @{
+                        var pf = Model.PaymentFrequencyValue ?? "OneTime";
+                        var options = new[] { ("OneTime","One-Time"),("Monthly","Monthly"),("Yearly","Yearly") };
+                    }
+                    <select class="form-select" id="paymentFrequency" required>
+                        @foreach (var opt in options)
+                        {
+                            <option value="@opt.Item1">@opt.Item2</option>
+                        }
+                    </select>
+                    <div class="invalid-feedback">Please select a payment frequency.</div>
+                </div>
+
+                <!-- Recipient (from donor portal) -->
+                <div class="col-12">
+                    <label for="recipient" class="form-label">Recipient<span class="text-danger">*</span></label>
+                    <select class="form-select" id="recipient" required>
+                        <option value="">Choose a recipient</option>
+                        @foreach (var r in Model.RecipientOptions)
+                        {
+                            <!-- keep ChildNbr as value, expose child name for JS via data attribute and text -->
+                            <option value="@r.Value" data-child-name="@r.Text">@r.Text</option>
+                        }
+                    </select>
+                    <div class="invalid-feedback">Please choose a recipient.</div>
+                </div>
+
+                <!-- Amount -->
+                <div class="col-12">
+                    <label for="amount" class="form-label">Amount<span class="text-danger">*</span></label>
+                    <input type="number" min="1" step="0.01" class="form-control" id="amount" placeholder="Enter Amount" required />
+                    <div class="invalid-feedback">Please enter an amount.</div>
+                </div>
+
+                <div class="col-12">
+                    <a href="javascript:void(0)" class="small">+ Add Recipient</a>
+                </div>
+
+                <div class="col-12 d-grid">
+                    <button type="button" class="btn btn-success py-2" id="sendGiftBtn">Send Gift</button>
+                </div>
+
+                <div id="gift-msg" class="mt-2" role="status" aria-live="polite"></div>
+
+                <p class="mt-3 small text-muted mb-0">
+                    Need assistance? Call us at <a href="tel:8007766767">800-776-6767</a> or email
+                    <a href="mailto:questions@childfund.org">questions@childfund.org</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    (function () {
+        const addToCartUrl = "@addToCartUrl";
+        const miniCartUrl = "@miniCartDetailsUrl";
+        const form = document.getElementById("@formId");
+        const sendBtn = document.getElementById("sendGiftBtn");
+
+        function getToken() {
+            const el = document.querySelector('input[name="__RequestVerificationToken"]');
+            return el ? el.value : null;
+        }
+        function setMsg(html, ok) {
+            const box = document.getElementById("gift-msg");
+            if (!box) return;
+            box.className = ok ? "alert alert-success" : "alert alert-danger";
+            box.innerHTML = html;
+        }
+        function refreshMiniCart() {
+            if (!miniCartUrl) return;
+            fetch(miniCartUrl, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+                .then(r => r.text())
+                .then(html => {
+                    const c = document.querySelector("#miniCartContainer");
+                    if (c) c.innerHTML = html;
+                })
+                .catch(() => { });
+        }
+        async function localAddToCart(payload) {
+            const headers = {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest"
+            };
+            const token = getToken();
+            if (token) headers["RequestVerificationToken"] = token;
+
+            return fetch(addToCartUrl, {
+                method: "POST",
+                headers,
+                body: JSON.stringify(payload)
+            });
+        }
+
+        sendBtn.addEventListener("click", async function () {
+            // simple client-side validation (Bootstrap-style)
+            const occasionSel = document.getElementById("occasion");
+            const paymentSel = document.getElementById("paymentFrequency");
+            const recipientSel = document.getElementById("recipient");
+            const amountInp = document.getElementById("amount");
+
+            if (!occasionSel.checkValidity() || !paymentSel.checkValidity()
+                || !recipientSel.checkValidity() || !amountInp.checkValidity()) {
+                form.classList.add("was-validated");
+                return;
+            }
+
+            // Gather values
+            const code = occasionSel.value; // Variant code
+            const paymentFrequency = paymentSel.value;
+            const childId = recipientSel.value; // ChildNbr
+            const childName = recipientSel.options[recipientSel.selectedIndex]?.getAttribute("data-child-name") || recipientSel.options[recipientSel.selectedIndex]?.text || "";
+            const amount = parseFloat(amountInp.value);
+
+            // Build payload (camelCase to match your API)
+            const payload = {
+                code: code,
+                quantity: 1,
+                childId: childId,
+                childName: childName,
+                isCustomPrice: true,
+                placedPrice: isFinite(amount) ? amount : null,
+                paymentFrequency: paymentFrequency
+            };
+
+            sendBtn.disabled = true;
+            try {
+                const res = await localAddToCart(payload);
+                if (res.ok) {
+                    setMsg("Gift added to cart.", true);
+                    refreshMiniCart();
+                    form.reset();
+                    form.classList.remove("was-validated");
+                } else {
+                    const json = await res.json().catch(() => null);
+                    const msg = (json && (json.message || json.errorMessage)) || "Could not add to cart.";
+                    setMsg(msg, false);
+                }
+            } catch {
+                setMsg("Something went wrong. Please try again.", false);
+            } finally {
+                sendBtn.disabled = false;
+            }
+        });
+    })();
+</script>

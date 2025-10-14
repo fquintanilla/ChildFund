@@ -8,6 +8,7 @@ using EPiServer.Security;
 using Mediachase.Commerce.Customers;
 using Mediachase.Commerce.Inventory;
 using Mediachase.Commerce.Security;
+using Org.BouncyCastle.Ocsp;
 
 namespace ChildFund.Web.Features.Checkout.Services
 {
@@ -51,10 +52,10 @@ namespace ChildFund.Web.Features.Checkout.Services
         {
             var contentLink = referenceConverter.GetContentLink(requestParams.Code);
             var entryContent = contentLoader.Get<EntryContentBase>(contentLink);
-            return AddToCart(cart, entryContent, requestParams.Quantity, requestParams.Store, requestParams.SelectedStore, requestParams.ChildId, requestParams.ChildName);
+            return AddToCart(cart, entryContent, requestParams);
         }
 
-        public AddToCartResult AddToCart(ICart cart, EntryContentBase entryContent, decimal quantity, string deliveryMethod, string warehouseCode, string? childId, string? childName)
+        public AddToCartResult AddToCart(ICart cart, EntryContentBase entryContent, RequestParamsToCart requestParams)
         {
             var result = new AddToCartResult();
             var contact = PrincipalInfo.CurrentPrincipal.GetCustomerContact();
@@ -67,34 +68,7 @@ namespace ChildFund.Web.Features.Checkout.Services
                     cart.Properties["OwnerOrg"] = contact.OwnerId.Value.ToString().ToLower();
                 }
             }
-
-            IWarehouse warehouse = null;
-
-            if (deliveryMethod.Equals("instore") && !string.IsNullOrEmpty(warehouseCode))
-            {
-                warehouse = warehouseRepository.Get(warehouseCode);
-            }
-
-            if (entryContent is BundleContent)
-            {
-                foreach (var relation in relationRepository.GetChildren<BundleEntry>(entryContent.ContentLink))
-                {
-                    var entry = contentLoader.Get<EntryContentBase>(relation.Child);
-                    var recursiveResult = AddToCart(cart, entry, (relation.Quantity ?? 1) * quantity, deliveryMethod, warehouseCode, childId, childName);
-                    if (recursiveResult.EntriesAddedToCart)
-                    {
-                        result.EntriesAddedToCart = true;
-                    }
-
-                    foreach (var message in recursiveResult.ValidationMessages)
-                    {
-                        result.ValidationMessages.Add(message);
-                    }
-                }
-
-                return result;
-            }
-
+            
             var form = cart.GetFirstForm();
             if (form == null)
             {
@@ -103,7 +77,7 @@ namespace ChildFund.Web.Features.Checkout.Services
                 cart.Forms.Add(form);
             }
 
-            var shipment = cart.GetFirstForm().Shipments.FirstOrDefault(x => string.IsNullOrEmpty(warehouseCode));
+            var shipment = cart.GetFirstForm().Shipments.FirstOrDefault();
 
             if (shipment == null)
             {
@@ -129,7 +103,7 @@ namespace ChildFund.Web.Features.Checkout.Services
 
             var lineItem = shipment.LineItems
                 .FirstOrDefault(x => x.Code == entryContent.Code &&
-                                     string.Equals(x.Properties?[Constant.LineItemFields.ChildId] as string, childId ?? string.Empty, StringComparison.OrdinalIgnoreCase));
+                                     string.Equals(x.Properties?[Constant.LineItemFields.ChildId] as string, requestParams.ChildId ?? string.Empty, StringComparison.OrdinalIgnoreCase));
 
             decimal originalLineItemQuantity = 0;
 
@@ -138,29 +112,42 @@ namespace ChildFund.Web.Features.Checkout.Services
                 lineItem = cart.CreateLineItem(entryContent.Code, orderGroupFactory);
 
                 // Sponsorship metadata
-                if (!string.IsNullOrWhiteSpace(childId))
+                if (!string.IsNullOrWhiteSpace(requestParams.ChildId))
                 {
-                    lineItem.Properties[Constant.LineItemFields.ChildId] = childId;
+                    lineItem.Properties[Constant.LineItemFields.ChildId] = requestParams.ChildId;
                 }
 
-                if (!string.IsNullOrWhiteSpace(childName))
+                if (!string.IsNullOrWhiteSpace(requestParams.ChildName))
                 {
-                    lineItem.Properties[Constant.LineItemFields.ChildName] = childName;
+                    lineItem.Properties[Constant.LineItemFields.ChildName] = requestParams.ChildName;
+                }
+
+                if (!string.IsNullOrWhiteSpace(requestParams.PaymentFrequency))
+                {
+                    lineItem.Properties[Constant.LineItemFields.PaymentFrequency] = requestParams.PaymentFrequency;
+                }
+
+                if (requestParams.PlacedPrice.HasValue && requestParams.PlacedPrice.Value > 0)
+                {
+                    lineItem.Properties[Constant.LineItemFields.IsCustomPrice] = requestParams.IsCustomPrice;
+                    lineItem.PlacedPrice = requestParams.PlacedPrice.Value;
+                    // If you use tax-inclusive/exclusive pricing or currency conversion,
+                    // adjust here as needed (Market/Currency are available on the order).
                 }
 
                 // Nice display name including the child for clarity in cart/checkout
-                var lineDisplayName = string.IsNullOrWhiteSpace(childName)
+                var lineDisplayName = string.IsNullOrWhiteSpace(requestParams.ChildName)
                     ? entryContent.DisplayName
-                    : $"{entryContent.DisplayName} - {childName}";
+                    : $"{entryContent.DisplayName} - {requestParams.ChildName}";
 
                 lineItem.DisplayName = lineDisplayName;
-                lineItem.Quantity = quantity;
+                lineItem.Quantity = requestParams.Quantity;
                 cart.AddLineItem(shipment, lineItem);
             }
             else
             {
                 originalLineItemQuantity = lineItem.Quantity;
-                cart.UpdateLineItemQuantity(shipment, lineItem, lineItem.Quantity + quantity);
+                cart.UpdateLineItemQuantity(shipment, lineItem, lineItem.Quantity + requestParams.Quantity);
             }
 
             var validationIssues = ValidateCart(cart);

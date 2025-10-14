@@ -39,6 +39,8 @@
         {
             public const string ChildId = "ChildId";
             public const string ChildName = "ChildName";
+            public const string PaymentFrequency = "PaymentFrequency";
+            public const string IsCustomPrice = "IsCustomPrice";
         }
     }
 }

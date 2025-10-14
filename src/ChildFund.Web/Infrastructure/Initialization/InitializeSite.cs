@@ -14,6 +14,7 @@ using ChildFund.Web.Infrastructure.Cms.Settings;
 using ChildFund.Web.Infrastructure.Commerce.Customer.Services;
 using ChildFund.Web.Infrastructure.Commerce.Extensions;
 using ChildFund.Web.Infrastructure.Commerce.Markets;
+using ChildFund.Web.Infrastructure.Commerce.Pricing;
 using ChildFund.Web.Infrastructure.Display;
 using ChildFund.Web.Infrastructure.Rendering;
 using Episerver.Marketing.Connector.Framework.Services;
@@ -80,6 +81,9 @@ namespace ChildFund.Web.Infrastructure.Initialization
             context.Services.AddSingleton<ICacheService, CacheService>();
             context.Services.AddSingleton<IConfigurationService, ConfigurationService>();
             context.Services.AddSingleton<IEncryptionService, EncryptionService>();
+            
+            context.Services.Intercept<IPlacedPriceProcessor>((locator, defaultImplementation) =>
+                new CustomPlacedPriceProcessor(defaultImplementation));
 
             // Custom Routes
             context.Services.AddTransient<NotFoundHandler>();
@@ -124,7 +128,9 @@ namespace ChildFund.Web.Infrastructure.Initialization
             var metaFields = new[]
             {
                 new { Name = Constant.LineItemFields.ChildId, DisplayName = "Child Id", Type = MetaDataType.ShortString, Length = 64 },
-                new { Name = Constant.LineItemFields.ChildName, DisplayName = "Child Name", Type = MetaDataType.LongString, Length = 256 }
+                new { Name = Constant.LineItemFields.ChildName, DisplayName = "Child Name", Type = MetaDataType.LongString, Length = 256 },
+                new { Name = Constant.LineItemFields.PaymentFrequency, DisplayName = "Payment Frequency", Type = MetaDataType.ShortString, Length = 64 },
+                new { Name = Constant.LineItemFields.IsCustomPrice, DisplayName = "Is Custom Price", Type = MetaDataType.Boolean, Length = 1 },
             };
 
             foreach (var f in metaFields)

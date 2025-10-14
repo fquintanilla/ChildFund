@@ -26,24 +26,13 @@
         public string NewSize { get; set; } = null;
 
         // for Add to cart
-        public string Store { get; set; } = "delivery";
-        public string SelectedStore { get; set; } = "";
         public string RequestFrom { get; set; } = "";
-
-        // for SharedCart 
-        public string OrganizationId { get; set; }
-
-        // for Checkout Separate shipment
-        public int ToShipmentId { get; set; }
-        public string DeliveryMethodId { get; set; }
-
-        // for DynamicProduct 
-        public List<string> DynamicCodes { get; set; }
 
         // Sponsorship
         public string ChildId { get; set; }
         public string ChildName { get; set; }
-
-
+        public decimal? PlacedPrice { get; set; }
+        public string PaymentFrequency { get; set; }
+        public bool IsCustomPrice { get; set; }
     }
 }
