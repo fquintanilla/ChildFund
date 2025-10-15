@@ -33,5 +33,10 @@ public sealed class ChildFundApiOptions
     /// Gets the effective base URL based on UseAsyncEndpoints setting.
     /// </summary>
     public string EffectiveBaseUrl => UseAsyncEndpoints ? AsyncBaseUrl : BaseUrl;
+
+    /// <summary>
+    /// If true, adds throttling headers (Optimizely_Client_IP and Optimizely-Client-ID) to API requests. Default is false.
+    /// </summary>
+    public bool EnableThrottlingHeaders { get; set; } = false;
 }
 

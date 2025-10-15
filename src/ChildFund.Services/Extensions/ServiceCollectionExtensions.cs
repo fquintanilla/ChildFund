@@ -1,4 +1,5 @@
 using ChildFund.Services.ApiClients;
+using ChildFund.Services.Handlers;
 using ChildFund.Services.Interfaces;
 using ChildFund.Services.Providers;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +28,9 @@ public static class ServiceCollectionExtensions
         // Register TokenProvider as singleton for token caching
         services.AddSingleton<ITokenProvider, TokenProvider>();
 
+        // Register throttling handler as transient (one per HTTP client)
+        services.AddTransient<ThrottlingHeadersHandler>();
+
         // Build service provider to get options for HttpMessageHandler configuration
         var serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetRequiredService<IOptions<ChildFundApiOptions>>().Value;
@@ -37,6 +41,7 @@ public static class ServiceCollectionExtensions
                 ConfigureHttpClient(client, options);
             })
             .ConfigurePrimaryHttpMessageHandler(() => CreateHttpMessageHandler(options))
+            .AddHttpMessageHandler<ThrottlingHeadersHandler>()
             .AddPolicyHandler(ChildFundApiClient.DefaultRetryPolicy());
 
         // Configure HTTP client for API calls
@@ -45,6 +50,7 @@ public static class ServiceCollectionExtensions
                 ConfigureHttpClient(client, options);
             })
             .ConfigurePrimaryHttpMessageHandler(() => CreateHttpMessageHandler(options))
+            .AddHttpMessageHandler<ThrottlingHeadersHandler>()
             .AddPolicyHandler(ChildFundApiClient.DefaultRetryPolicy());
 
         services.AddHttpClient<IDonorPortalClient, DonorPortalClient>((sp, client) =>
@@ -52,6 +58,7 @@ public static class ServiceCollectionExtensions
                 ConfigureHttpClient(client, options);
             })
             .ConfigurePrimaryHttpMessageHandler(() => CreateHttpMessageHandler(options))
+            .AddHttpMessageHandler<ThrottlingHeadersHandler>()
             .AddPolicyHandler(ChildFundApiClient.DefaultRetryPolicy());
 
         services.AddHttpClient<ILookupClient, LookupClient>((sp, client) =>
@@ -59,6 +66,7 @@ public static class ServiceCollectionExtensions
                 ConfigureHttpClient(client, options);
             })
             .ConfigurePrimaryHttpMessageHandler(() => CreateHttpMessageHandler(options))
+            .AddHttpMessageHandler<ThrottlingHeadersHandler>()
             .AddPolicyHandler(ChildFundApiClient.DefaultRetryPolicy());
 
         return services;

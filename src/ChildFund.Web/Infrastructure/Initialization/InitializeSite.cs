@@ -1,4 +1,5 @@
-﻿using ChildFund.Web.Core.CustomRoutes.Error;
+﻿using ChildFund.Services.Interfaces;
+using ChildFund.Web.Core.CustomRoutes.Error;
 using ChildFund.Web.Features.CatalogContent.Services;
 using ChildFund.Web.Features.Checkout.Payments;
 using ChildFund.Web.Features.Checkout.Services;
@@ -17,6 +18,7 @@ using ChildFund.Web.Infrastructure.Commerce.Markets;
 using ChildFund.Web.Infrastructure.Commerce.Pricing;
 using ChildFund.Web.Infrastructure.Display;
 using ChildFund.Web.Infrastructure.Rendering;
+using ChildFund.Web.Infrastructure.Services;
 using ChildFund.Web.Repositories;
 using Episerver.Marketing.Connector.Framework.Services;
 using EPiServer.Commerce.Internal.Migration;
@@ -77,6 +79,9 @@ namespace ChildFund.Web.Infrastructure.Initialization
 
             //Repositories to ChildFund services
             context.Services.AddTransient<ILookupRepository, LookupRepository>();
+
+            // ChildFund.Services infrastructure
+            context.Services.AddSingleton<IThrottlingContextProvider, ThrottlingContextProvider>();
 
             // Repositories
             context.Services.AddTransient<IPaymentMethod, GenericCreditCardPaymentOption>();
