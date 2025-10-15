@@ -54,6 +54,13 @@ public static class ServiceCollectionExtensions
             .ConfigurePrimaryHttpMessageHandler(() => CreateHttpMessageHandler(options))
             .AddPolicyHandler(ChildFundApiClient.DefaultRetryPolicy());
 
+        services.AddHttpClient<ILookupClient, LookupClient>((sp, client) =>
+            {
+                ConfigureHttpClient(client, options);
+            })
+            .ConfigurePrimaryHttpMessageHandler(() => CreateHttpMessageHandler(options))
+            .AddPolicyHandler(ChildFundApiClient.DefaultRetryPolicy());
+
         return services;
     }
 

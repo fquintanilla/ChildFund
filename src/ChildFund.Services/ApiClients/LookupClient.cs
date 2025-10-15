@@ -19,10 +19,31 @@ public sealed class LookupClient : ChildFundApiClient, ILookupClient
     {
     }
 
-    /// <summary>
-    /// Retrieves all available countries from the ChildFund API.
-    /// </summary>
-    public Task<CountryDto[]?> GetAllCountriesAsync(CancellationToken ct = default) =>
-        GetAsync<CountryDto[]?>("Lookup/GetAllCountries", JsonDefaults.Options, ct);
+    public Task<List<RefCodeInfoDto>?> GetAllCountriesAsync(CancellationToken ct = default) =>
+        GetAsync<List<RefCodeInfoDto>?>("Lookup/GetAllCountries", JsonDefaults.Options, ct);
+
+    public Task<List<RefCodeInfoDto>?> GetGenderAsync(CancellationToken ct = default) =>
+        GetAsync<List<RefCodeInfoDto>?>("Lookup/GetGender", JsonDefaults.Options, ct);
+
+    public Task<List<RefCodeInfoDto>?> GetNonIACountriesAsync(CancellationToken ct = default) =>
+        GetAsync<List<RefCodeInfoDto>?>("Lookup/GetNonIACountries", JsonDefaults.Options, ct);
+
+    public Task<List<CodeInfoDto>?> GetStatesAsync(CancellationToken ct = default) =>
+        GetAsync<List<CodeInfoDto>?>("Lookup/GetStates", JsonDefaults.Options, ct);
+
+    public Task<List<CodeInfoDto>?> GetStatesAndProvincesAsync(CancellationToken ct = default) =>
+        GetAsync<List<CodeInfoDto>?>("Lookup/GetStatesAndProvinces", JsonDefaults.Options, ct);
+
+    public Task<List<RefCodeInfoDto>?> GetWebCountriesAsync(CancellationToken ct = default) =>
+        GetAsync<List<RefCodeInfoDto>?>("Lookup/GetWebCountries", JsonDefaults.Options, ct);
+
+    public Task<List<RefCodeInfoDto>?> GetWebCountriesAvailableSponsorshipsAsync(CancellationToken ct = default) =>
+        GetAsync<List<RefCodeInfoDto>?>("Lookup/GetWebCountriesAvailableSponsorships", JsonDefaults.Options, ct);
+
+    public Task<List<CodeInfoDto>?> GetWebSuffixesAsync(CancellationToken ct = default) =>
+        GetAsync<List<CodeInfoDto>?>("Lookup/GetWebSuffixes", JsonDefaults.Options, ct);
+
+    public Task<List<CodeInfoDto>?> GetWebTitlesAsync(CancellationToken ct = default) =>
+        GetAsync<List<CodeInfoDto>?>("Lookup/GetWebTitles", JsonDefaults.Options, ct);
 }
 

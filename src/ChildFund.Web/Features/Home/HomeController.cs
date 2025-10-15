@@ -1,7 +1,7 @@
-﻿using ChildFund.Services;
-using ChildFund.Services.Interfaces;
+﻿using ChildFund.Services.Interfaces;
 using ChildFund.Web.Features.Shared.ViewModels;
 using ChildFund.Web.Infrastructure.Cms.Extensions;
+using ChildFund.Web.Repositories;
 
 namespace ChildFund.Web.Features.Home
 {
@@ -14,6 +14,9 @@ namespace ChildFund.Web.Features.Home
             //var data = await client.GetContactByIdAsync("847166170");
             //var data = await client.GetLteChildrenByContactId("847166170");
 
+            var repo = ServiceLocator.Current.GetInstance<ILookupRepository>();
+            var countries = await repo.GetAllCountriesAsync();
+            var titles = await repo.GetWebTitlesAsync();
 
             var model = ContentViewModel.Create(currentContent);
             return await Task.FromResult<IActionResult>(this.View(currentContent, model));

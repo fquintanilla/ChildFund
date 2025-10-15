@@ -48,11 +48,11 @@ public abstract class ChildFundApiClient
         CancellationToken ct = default)
     {
         await EnsureAuthAsync(ct);
-        
+
         var effectivePath = _useAsyncEndpoints ? AppendAsyncToPath(relativePath) : relativePath;
         using var resp = await Http.GetAsync(effectivePath, ct);
         resp.EnsureSuccessStatusCode();
-        
+
         await using var stream = await resp.Content.ReadAsStreamAsync(ct);
         return (await JsonSerializer.DeserializeAsync<T>(stream, jsonOptions ?? JsonDefaults.Options, ct))!;
     }
@@ -79,7 +79,7 @@ public abstract class ChildFundApiClient
 
         using var resp = await Http.PostAsync(effectivePath, content, ct);
         resp.EnsureSuccessStatusCode();
-        
+
         await using var stream = await resp.Content.ReadAsStreamAsync(ct);
 
         return (await JsonSerializer.DeserializeAsync<T>(stream, jsonOptions ?? JsonDefaults.Options, ct))!;
@@ -126,11 +126,11 @@ public abstract class ChildFundApiClient
     /// <summary>
     /// Default retry policy for transient HTTP errors (network failures, 5xx, 429).
     /// Uses exponential backoff: 200ms, 400ms, 800ms.
+    /// Only retry once.
     /// </summary>
     public static IAsyncPolicy<HttpResponseMessage> DefaultRetryPolicy() =>
         HttpPolicyExtensions
             .HandleTransientHttpError()
             .OrResult(msg => (int)msg.StatusCode == 429)
-            .WaitAndRetryAsync(3, attempt => TimeSpan.FromMilliseconds(200 * Math.Pow(2, attempt)));
+            .WaitAndRetryAsync(1, attempt => TimeSpan.FromMilliseconds(200 * Math.Pow(2, attempt)));
 }
-
