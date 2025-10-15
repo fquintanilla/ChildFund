@@ -6,7 +6,7 @@ namespace ChildFund.Web.Repositories;
 /// Repository for cached lookup data (countries, reference data, etc.)
 /// Provides caching layer over ChildFund.Services API calls.
 /// </summary>
-public interface ILookupRepository
+public interface ILookupServiceRepository
 {
     Task<List<RefCodeInfoDto>?> GetAllCountriesAsync(bool forceRefresh = false, CancellationToken ct = default);
 

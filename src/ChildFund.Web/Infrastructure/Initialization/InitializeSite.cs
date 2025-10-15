@@ -78,7 +78,8 @@ namespace ChildFund.Web.Infrastructure.Initialization
             context.Services.AddSingleton<ICreditCardService, CreditCardService>();
 
             //Repositories to ChildFund services
-            context.Services.AddTransient<ILookupRepository, LookupRepository>();
+            context.Services.AddTransient<ILookupServiceRepository, LookupServiceRepository>();
+            context.Services.AddTransient<IChildServiceRepository, ChildServiceRepository>();
 
             // ChildFund.Services infrastructure
             context.Services.AddSingleton<IThrottlingContextProvider, ThrottlingContextProvider>();

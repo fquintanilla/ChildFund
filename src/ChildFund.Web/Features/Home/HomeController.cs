@@ -14,9 +14,13 @@ namespace ChildFund.Web.Features.Home
             //var data = await client.GetContactByIdAsync("847166170");
             //var data = await client.GetLteChildrenByContactId("847166170");
 
-            var repo = ServiceLocator.Current.GetInstance<ILookupRepository>();
+            /*var repo = ServiceLocator.Current.GetInstance<ILookupServiceRepository>();
             var countries = await repo.GetAllCountriesAsync();
-            var titles = await repo.GetWebTitlesAsync();
+            var titles = await repo.GetWebTitlesAsync();*/
+
+            var repo = ServiceLocator.Current.GetInstance<IChildServiceRepository>();
+            var random = await repo.GetRandomKidsForWeb();
+            var withFilter = await repo.GetAvailableKidsForWeb(new Services.Models.ChildFilterDto { Gender = "M" });
 
             var model = ContentViewModel.Create(currentContent);
             return await Task.FromResult<IActionResult>(this.View(currentContent, model));

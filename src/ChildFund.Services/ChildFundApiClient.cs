@@ -85,6 +85,49 @@ public abstract class ChildFundApiClient
         return (await JsonSerializer.DeserializeAsync<T>(stream, jsonOptions ?? JsonDefaults.Options, ct))!;
     }
 
+    /// <summary>
+    /// Performs an authenticated GET request and returns the raw HttpResponseMessage.
+    /// Automatically appends "Async" to the path when UseAsyncEndpoints is enabled.
+    /// </summary>
+    protected async Task<HttpResponseMessage> GetResponseAsync(
+        string relativePath,
+        CancellationToken ct = default)
+    {
+        await EnsureAuthAsync(ct);
+
+        var effectivePath = _useAsyncEndpoints ? AppendAsyncToPath(relativePath) : relativePath;
+        var resp = await Http.GetAsync(effectivePath, ct);
+        resp.EnsureSuccessStatusCode();
+
+        return resp;
+    }
+
+    /// <summary>
+    /// Performs an authenticated POST request and returns the raw HttpResponseMessage.
+    /// Automatically appends "Async" to the path when UseAsyncEndpoints is enabled.
+    /// </summary>
+    protected async Task<HttpResponseMessage> PostResponseAsync(
+        string relativePath,
+        object? body = null,
+        JsonSerializerOptions? jsonOptions = null,
+        CancellationToken ct = default)
+    {
+        await EnsureAuthAsync(ct);
+
+        var effectivePath = _useAsyncEndpoints ? AppendAsyncToPath(relativePath) : relativePath;
+        using var content = body is null
+            ? null
+            : new StringContent(
+                JsonSerializer.Serialize(body, jsonOptions ?? JsonDefaults.Options),
+                System.Text.Encoding.UTF8,
+                "application/json");
+
+        var resp = await Http.PostAsync(effectivePath, content, ct);
+        resp.EnsureSuccessStatusCode();
+
+        return resp;
+    }
+
     private async Task EnsureAuthAsync(CancellationToken ct)
     {
         var header = await _tokenProvider.GetAuthHeaderAsync(ct);

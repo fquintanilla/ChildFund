@@ -8,7 +8,7 @@ namespace ChildFund.Web.Repositories;
 /// Repository for cached lookup data (countries, reference data, etc.)
 /// Provides caching layer over ChildFund.Services API calls.
 /// </summary>
-public class LookupRepository : ILookupRepository
+public class LookupServiceRepository : ILookupServiceRepository
 {
     private readonly ILookupClient _lookupClient;
     private readonly ICacheService _cache;
@@ -27,7 +27,7 @@ public class LookupRepository : ILookupRepository
 
     private const int LookupCacheDurationSeconds = 3600; // 1 hour for all lookup data
 
-    public LookupRepository(
+    public LookupServiceRepository(
         ILookupClient lookupClient,
         ICacheService cache)
     {
