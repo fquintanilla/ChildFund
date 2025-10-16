@@ -69,6 +69,14 @@ public static class ServiceCollectionExtensions
             .AddHttpMessageHandler<ThrottlingHeadersHandler>()
             .AddPolicyHandler(ChildFundApiClient.DefaultRetryPolicy());
 
+        services.AddHttpClient<ITransactionClient, TransactionClient>((sp, client) =>
+            {
+                ConfigureHttpClient(client, options);
+            })
+            .ConfigurePrimaryHttpMessageHandler(() => CreateHttpMessageHandler(options))
+            .AddHttpMessageHandler<ThrottlingHeadersHandler>()
+            .AddPolicyHandler(ChildFundApiClient.DefaultRetryPolicy());
+
         return services;
     }
 

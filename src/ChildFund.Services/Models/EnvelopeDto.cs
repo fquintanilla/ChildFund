@@ -3,44 +3,64 @@ using System.Text.Json.Serialization;
 namespace ChildFund.Services.Models;
 
 /// <summary>
+/// Base envelope for API responses.
+/// </summary>
+public class EnvelopeBaseDto
+{
+    [JsonPropertyName("ErrorList")]
+    public string[]? ErrorList { get; set; }
+
+    [JsonPropertyName("ErrorMessage")]
+    public string? ErrorMessage { get; set; }
+
+    [JsonPropertyName("NewID")]
+    public int NewID { get; set; }
+
+    [JsonPropertyName("NewOutput")]
+    public byte[]? NewOutput { get; set; }
+
+    [JsonPropertyName("NewValue")]
+    public string? NewValue { get; set; }
+
+    [JsonPropertyName("NumberOfRecordsAffected")]
+    public int NumberOfRecordsAffected { get; set; }
+
+    [JsonPropertyName("ReturnCode")]
+    public int ReturnCode { get; set; }
+
+    [JsonPropertyName("ReturnMessage")]
+    public ReturnMsg ReturnMessage { get; set; }
+
+    [JsonPropertyName("StackTrace")]
+    public string? StackTrace { get; set; }
+}
+
+/// <summary>
 /// Envelope containing API response data.
 /// </summary>
-public class EnvelopeDto : EnvelopeBase
+public class EnvelopeDto : EnvelopeBaseDto
 {
     [JsonPropertyName("<AgpOut>k__BackingField")]
-    public AgpInfo? AgpOut { get; set; }
+    public AgpInfoDto? AgpOut { get; set; }
 
     [JsonPropertyName("<AvailableKids>k__BackingField")]
     public WebChildInfoDto[]? AvailableKids { get; set; }
 
     [JsonPropertyName("<HouseholdMatches>k__BackingField")]
-    public ContactInfo[]? HouseholdMatches { get; set; }
+    public ContactInfoDto[]? HouseholdMatches { get; set; }
 
     [JsonPropertyName("<TransOut>k__BackingField")]
-    public TransactionInfo? TransOut { get; set; }
+    public TransactionInfoDto? TransOut { get; set; }
 }
 
 /// <summary>
-/// Placeholder for AgpInfo - define properties as needed.
+/// Return message enumeration.
 /// </summary>
-public class AgpInfo
+public enum ReturnMsg
 {
-    // Add properties based on actual usage
+    Success = 0,
+    Failure = 1,
+    Unknown = 2,
+    Error = 1,
+    Warning = 2
 }
-
-/// <summary>
-/// Placeholder for ContactInfo - define properties as needed.
-/// </summary>
-public class ContactInfo
-{
-    // Add properties based on actual usage
-}
-
-/// <summary>
-/// Placeholder for TransactionInfo - define properties as needed.
-/// </summary>
-public class TransactionInfo
-{
-    // Add properties based on actual usage
-}
-
