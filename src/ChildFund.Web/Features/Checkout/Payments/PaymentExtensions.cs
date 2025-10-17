@@ -14,7 +14,7 @@
                 return _paymentMethods;
             }
         }
-        public static IPaymentMethod GetPaymentMethod(this string systemKeyword)
+        public static IPaymentMethod? GetPaymentMethod(this string systemKeyword)
         {
             if (string.IsNullOrEmpty(systemKeyword))
             {

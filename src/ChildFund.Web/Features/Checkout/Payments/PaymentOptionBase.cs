@@ -6,7 +6,6 @@ namespace ChildFund.Web.Features.Checkout.Payments
     {
         protected readonly LocalizationService LocalizationService;
         protected readonly IOrderGroupFactory OrderGroupFactory;
-
         public Guid PaymentMethodId { get; }
         public abstract string SystemKeyword { get; }
         public string Name { get; }
@@ -22,20 +21,24 @@ namespace ChildFund.Web.Features.Checkout.Payments
             LocalizationService = localizationService;
             OrderGroupFactory = orderGroupFactory;
 
-            if (!string.IsNullOrEmpty(SystemKeyword))
+            if (string.IsNullOrEmpty(SystemKeyword))
             {
-                var currentMarketId = currentMarket.GetCurrentMarket().MarketId.Value;
-                var currentLanguage = languageService.GetCurrentLanguage().TwoLetterISOLanguageName;
-                var availablePaymentMethods = paymentService.GetPaymentMethodsByMarketIdAndLanguageCode(currentMarketId, currentLanguage);
-                var paymentMethod = availablePaymentMethods.FirstOrDefault(m => m.SystemKeyword.Equals(SystemKeyword));
-
-                if (paymentMethod != null)
-                {
-                    PaymentMethodId = paymentMethod.PaymentMethodId;
-                    Name = paymentMethod.FriendlyName;
-                    Description = paymentMethod.Description;
-                }
+                return;
             }
+
+            var currentMarketId = currentMarket.GetCurrentMarket().MarketId.Value;
+            var currentLanguage = languageService.GetCurrentLanguage().TwoLetterISOLanguageName;
+            var availablePaymentMethods = paymentService.GetPaymentMethodsByMarketIdAndLanguageCode(currentMarketId, currentLanguage);
+            var paymentMethod = availablePaymentMethods.FirstOrDefault(m => m.SystemKeyword.Equals(SystemKeyword));
+
+            if (paymentMethod == null)
+            {
+                return;
+            }
+
+            PaymentMethodId = paymentMethod.PaymentMethodId;
+            Name = paymentMethod.FriendlyName;
+            Description = paymentMethod.Description;
         }
 
         public abstract IPayment CreatePayment(decimal amount, IOrderGroup orderGroup);

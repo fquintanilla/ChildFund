@@ -173,14 +173,6 @@ namespace ChildFund.Web.Features.Checkout.ViewModels
             }
 
             viewModel.SelectedPayment = method.Description;
-            var payment = cart.GetFirstForm().
-                Payments.FirstOrDefault();
-            var creditCardPayment = payment as ICreditCardPayment;
-            if (creditCardPayment != null)
-            {
-                viewModel.SelectedPayment +=
-                    $" - ({creditCardPayment.CreditCardNumber.Substring(creditCardPayment.CreditCardNumber.Length - 4)})";
-            }
         }
 
         private AddressModel CreateBillingAddressModel(string currentBillingAdressId)
