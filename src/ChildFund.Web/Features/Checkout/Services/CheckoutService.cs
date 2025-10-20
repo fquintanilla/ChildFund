@@ -12,7 +12,6 @@ using Mediachase.Commerce.Orders.Exceptions;
 using Mediachase.Commerce.Orders.Managers;
 using Mediachase.Commerce.Security;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using ILogger = EPiServer.Logging.ILogger;
 
 namespace ChildFund.Web.Features.Checkout.Services
 {
@@ -28,7 +27,7 @@ namespace ChildFund.Web.Features.Checkout.Services
         private readonly LocalizationService _localizationService;
         private readonly IMailService _mailService;
         private readonly IPromotionEngine _promotionEngine;
-        private readonly ILogger _log = LogManager.GetLogger(typeof(CheckoutService));
+        private readonly ILogger<CheckoutService> _log;
         private readonly ISettingsService _settingsService;
 
         public AuthenticatedPurchaseValidation AuthenticatedPurchaseValidation { get; private set; }
@@ -45,7 +44,8 @@ namespace ChildFund.Web.Features.Checkout.Services
             LocalizationService localizationService,
             IMailService mailService,
             IPromotionEngine promotionEngine,
-            ISettingsService settingsService)
+            ISettingsService settingsService,
+            ILogger<CheckoutService> log)
         {
             _addressBookService = addressBookService;
             _orderGroupFactory = orderGroupFactory;
@@ -57,6 +57,7 @@ namespace ChildFund.Web.Features.Checkout.Services
             _localizationService = localizationService;
             _mailService = mailService;
             _promotionEngine = promotionEngine;
+            _log = log;
 
             AuthenticatedPurchaseValidation = new AuthenticatedPurchaseValidation(_localizationService);
             AnonymousPurchaseValidation = new AnonymousPurchaseValidation(_localizationService);
@@ -98,25 +99,7 @@ namespace ChildFund.Web.Features.Checkout.Services
                         _addressBookService.ConvertToAddress(viewModel.Shipments[updateAddressViewModel.ShippingAddressIndex].Address, cart);
             }
         }
-
-        /// <summary>
-        /// Update payment plan information
-        /// </summary>
-        /// <param name="cart"></param>
-        /// <param name="viewModel"></param>
-        public virtual void UpdatePaymentPlan(ICart cart, CheckoutViewModel viewModel)
-        {
-            if (viewModel.IsUsePaymentPlan)
-            {
-                cart.Properties["IsUsePaymentPlan"] = true;
-                cart.Properties["PaymentPlanSetting"] = viewModel.PaymentPlanSetting;
-            }
-            else
-            {
-                cart.Properties["IsUsePaymentPlan"] = false;
-            }
-        }
-
+        
         public virtual void ApplyDiscounts(ICart cart) => cart.ApplyDiscounts(_promotionEngine, new PromotionEngineSettings());
 
         public virtual void CreateAndAddPaymentToCart(ICart cart, CheckoutViewModel viewModel)
@@ -177,7 +160,7 @@ namespace ChildFund.Web.Features.Checkout.Services
                     throw new InvalidOperationException("Wrong amount");
                 }
 
-                var orderReference = cart.Properties["IsUsePaymentPlan"] != null && cart.Properties["IsUsePaymentPlan"].Equals(true) ? SaveAsPaymentPlan(cart) : _orderRepository.SaveAsPurchaseOrder(cart);
+                var orderReference = _orderRepository.SaveAsPurchaseOrder(cart);
                 var purchaseOrder = _orderRepository.Load<IPurchaseOrder>(orderReference.OrderGroupId);
                 _orderRepository.Delete(cart.OrderLink);
 
@@ -191,6 +174,7 @@ namespace ChildFund.Web.Features.Checkout.Services
             }
             catch (Exception ex)
             {
+                _log.LogError(ex, "An error has occurred.");
                 modelState.AddModelError("", ex.Message);
             }
 
@@ -215,7 +199,8 @@ namespace ChildFund.Web.Features.Checkout.Services
                 }
                 catch (Exception e)
                 {
-                    _log.Warning(string.Format("Unable to send purchase receipt to '{0}'.", purchaseOrder.GetFirstForm().Payments.FirstOrDefault().BillingAddress.Email), e);
+                    _log.LogWarning(
+                        $"Unable to send purchase receipt to '{purchaseOrder.GetFirstForm().Payments.FirstOrDefault().BillingAddress.Email}'.", e);
                     return false;
                 }
             }

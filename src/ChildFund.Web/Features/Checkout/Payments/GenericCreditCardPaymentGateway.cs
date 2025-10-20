@@ -7,6 +7,7 @@ namespace ChildFund.Web.Features.Checkout.Payments
     {
         public PaymentProcessingResult ProcessPayment(IOrderGroup orderGroup, IPayment payment)
         {
+            var creditCardPayment = (ICreditCardPayment)payment;
             return PaymentProcessingResult.CreateSuccessfulResult("");
         }
 

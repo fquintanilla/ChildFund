@@ -7,6 +7,9 @@ using ChildFund.Web.Features.Checkout.ViewModels;
 using ChildFund.Web.Features.MyAccount.AddressBook;
 using ChildFund.Web.Features.MyAccount.CreditCard;
 using ChildFund.Web.Features.MyOrganization.Organization;
+using ChildFund.Web.Features.Upsell.Dsl;
+using ChildFund.Web.Features.Upsell.Evaluators;
+using ChildFund.Web.Features.Upsell.Services;
 using ChildFund.Web.Infrastructure.Cms.Accessor;
 using ChildFund.Web.Infrastructure.Cms.Helpers;
 using ChildFund.Web.Infrastructure.Cms.ModelBinders;
@@ -49,11 +52,8 @@ namespace ChildFund.Web.Infrastructure.Initialization
 
             //Commerce
             context.Services.AddTransient<CheckoutViewModelFactory>();
-            //context.Services.AddSingleton<MultiShipmentViewModelFactory>();
             context.Services.AddSingleton<OrderSummaryViewModelFactory>();
             context.Services.AddSingleton<PaymentMethodViewModelFactory>();
-            //context.Services.AddSingleton<CatalogEntryViewModelFactory>();
-            //context.Services.AddSingleton<IHeaderViewModelFactory, HeaderViewModelFactory>();
             context.Services.AddSingleton<CartItemViewModelFactory>();
             context.Services.AddSingleton<CartViewModelFactory>();
             context.Services.AddSingleton<ShipmentViewModelFactory>();
@@ -86,8 +86,6 @@ namespace ChildFund.Web.Infrastructure.Initialization
             // ChildFund.Services infrastructure
             context.Services.AddSingleton<IThrottlingContextProvider, ThrottlingContextProvider>();
 
-            // Repositories
-            context.Services.AddTransient<IPaymentMethod, GenericCreditCardPaymentOption>();
             context.Services.AddSingleton<ServiceAccessor<IContentRouteHelper>>(locator =>
                 locator.GetInstance<IContentRouteHelper>);
             context.Services.AddTransient<IModelBinderProvider, ModelBinderProvider>();
@@ -96,8 +94,30 @@ namespace ChildFund.Web.Infrastructure.Initialization
             context.Services.AddSingleton<IConfigurationService, ConfigurationService>();
             context.Services.AddSingleton<IEncryptionService, EncryptionService>();
 
+            // Payment methods
+            context.Services.AddTransient<IPaymentMethod, AccountPaymentOption>();
+            context.Services.AddTransient<IPaymentMethod, GenericCreditCardPaymentOption>();
+
             context.Services.Intercept<IPlacedPriceProcessor>((locator, defaultImplementation) =>
                 new CustomPlacedPriceProcessor(defaultImplementation));
+
+            #region Upsell
+
+            context.Services.AddSingleton<IConditionEvaluator, CartTotalGteEvaluator>();
+            context.Services.AddSingleton<IConditionEvaluator, CartTotalLteEvaluator>();
+            context.Services.AddSingleton<IConditionEvaluator, ContainsSkuEvaluator>();
+            context.Services.AddSingleton<IConditionEvaluator, DateBetweenEvaluator>();
+            context.Services.AddSingleton<IConditionEvaluator, CustomerSegmentInEvaluator>();
+            // services.AddSingleton<IConditionEvaluator, ContainsTagEvaluator>(); // if needed
+
+            context.Services.AddSingleton<IConditionRegistry, ConditionRegistry>();
+            context.Services.AddSingleton<IDslEvaluator, JsonDslEvaluator>();
+
+            context.Services.AddTransient<IUpsellCandidateRepository, UpsellCandidateRepository>();
+            context.Services.AddTransient<IUpsellSelectorService, UpsellSelectorService>();
+            context.Services.AddTransient<ICartContextProvider, CartContextProvider>();
+
+            #endregion
 
             // Custom Routes
             context.Services.AddTransient<NotFoundHandler>();

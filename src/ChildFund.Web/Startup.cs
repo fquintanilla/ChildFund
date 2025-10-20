@@ -239,7 +239,7 @@ public class Startup(
 
         app.UseEndpoints(endpoints =>
         {
-            //endpoints.MapControllerRoute(name: "Default", pattern: "{controller}/{action}/{id?}");
+            endpoints.MapControllerRoute(name: "Default", pattern: "{controller}/{action}/{id?}");
             endpoints.MapControllers();
             endpoints.MapRazorPages();
             endpoints.MapContent();

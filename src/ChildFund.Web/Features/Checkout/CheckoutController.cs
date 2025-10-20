@@ -18,7 +18,8 @@ namespace ChildFund.Web.Features.Checkout
         IContentLoader contentLoader,
         ISettingsService settingsService,
         IOrderRepository orderRepository,
-        ICustomerService customerContext) : PageController<CheckoutPage>
+        ICustomerService customerContext,
+        ILogger<CheckoutController> logger) : PageController<CheckoutPage>
     {
         private CartWithValidationIssues? _cart;
 
@@ -175,6 +176,7 @@ namespace ChildFund.Web.Features.Checkout
             catch (Exception e)
             {
                 TempData[Constant.ErrorMessages] = e.Message;
+                logger.LogError(e, "An error occurred while placing the order.");
                 //return RedirectToAction("Index");
                 return Json(new { Status = false, e.Message });
             }
@@ -254,11 +256,16 @@ namespace ChildFund.Web.Features.Checkout
         [HttpPost]
         public IActionResult UpdatePayment(CheckoutPage currentPage, [FromForm] CheckoutViewModel viewModel)
         {
-
             var paymentOption = viewModel.SystemKeyword.GetPaymentMethod();
+
+            if (paymentOption is AccountPaymentOption accountPayment)
+            {
+                accountPayment.AccountNumber = "123456";
+            }
+
             if (paymentOption == null || !paymentOption.ValidateData())
             {
-                return View("~/Features/Checkout/Index.cshtml", viewModel);
+                return Json(new { success = false, description = "Payment is not valid" });
             }
 
             viewModel.Payment = paymentOption;
@@ -284,7 +291,7 @@ namespace ChildFund.Web.Features.Checkout
         public IActionResult RemovePayment(CheckoutPage currentPage, [FromBody] CheckoutViewModel viewModel)
         {
             var paymentOption = viewModel.SystemKeyword.GetPaymentMethod();
-            if (paymentOption == null || !paymentOption.ValidateData())
+            if (paymentOption == null)
             {
                 return View("~/Features/Checkout/Index.cshtml", viewModel);
             }

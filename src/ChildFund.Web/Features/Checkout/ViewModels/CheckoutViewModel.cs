@@ -85,10 +85,6 @@ namespace ChildFund.Web.Features.Checkout.ViewModels
         public string ViewName => Shipments != null && Shipments.Count > 1 ? MultiShipmentCheckoutViewName : SingleShipmentCheckoutViewName;
 
         public ContactViewModel CurrentCustomer { get; set; }
-        public string QuoteStatus { get; set; } = "";
-        public bool IsOnHoldBudget { get; set; }
-
-        public bool IsUsePaymentPlan { get; set; }
 
         public PaymentPlanSetting PaymentPlanSetting { get; set; }
 
