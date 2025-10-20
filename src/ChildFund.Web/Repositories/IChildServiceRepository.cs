@@ -8,13 +8,13 @@ namespace ChildFund.Web.Repositories;
 /// </summary>
 public interface IChildServiceRepository
 {
-    Task<EnvelopeDto> GetAvailableKidsForWeb(ChildFilterDto childFilterDto, CancellationToken ct = default);
+    Task<EnvelopeDto?> GetAvailableKidsForWeb(ChildFilterDto childFilterDto, CancellationToken ct = default);
 
-    Task<WebChildInfoDto> GetAvailableSingleKidForWeb(int countryCode, CancellationToken ct = default);
+    Task<WebChildInfoDto?> GetAvailableSingleKidForWeb(int countryCode, CancellationToken ct = default);
 
-    Task<List<WebChildInfoDto>> GetRandomKidsForWeb(CancellationToken ct = default);
+    Task<List<WebChildInfoDto>?> GetRandomKidsForWeb(CancellationToken ct = default);
 
-    Task<WebChildInfoDto> GetRandomSingleKidForWeb(CancellationToken ct = default);
+    Task<WebChildInfoDto?> GetRandomSingleKidForWeb(CancellationToken ct = default);
 
     Task<byte[]?> GetChildPhoto(int noId, int childNumber, CancellationToken ct = default);
 

@@ -16,29 +16,19 @@ public class ChildServiceRepository : IChildServiceRepository
         _childInventoryClient = childInventoryClient ?? throw new ArgumentNullException(nameof(childInventoryClient));
     }
 
-    public async Task<EnvelopeDto> GetAvailableKidsForWeb(ChildFilterDto childFilterDto, CancellationToken ct = default)
-    {
-        var result = await _childInventoryClient.GetAvailableKidsForWebAsync(childFilterDto, ct);
-        return result ?? new EnvelopeDto();
-    }
+    public async Task<EnvelopeDto?> GetAvailableKidsForWeb(ChildFilterDto childFilterDto,
+        CancellationToken ct = default) =>
+        await _childInventoryClient.GetAvailableKidsForWebAsync(childFilterDto, ct);
 
-    public async Task<WebChildInfoDto> GetAvailableSingleKidForWeb(int countryCode, CancellationToken ct = default)
-    {
-        var result = await _childInventoryClient.GetAvailableSingleKidForWebAsync(countryCode, ct);
-        return result ?? new WebChildInfoDto();
-    }
+    public async Task<WebChildInfoDto?> GetAvailableSingleKidForWeb(int countryCode,
+        CancellationToken ct = default) =>
+        await _childInventoryClient.GetAvailableSingleKidForWebAsync(countryCode, ct);
 
-    public async Task<List<WebChildInfoDto>> GetRandomKidsForWeb(CancellationToken ct = default)
-    {
-        var result = await _childInventoryClient.GetRandomKidsForWebAsync(ct);
-        return result ?? new List<WebChildInfoDto>();
-    }
+    public async Task<List<WebChildInfoDto>?> GetRandomKidsForWeb(CancellationToken ct = default) =>
+        await _childInventoryClient.GetRandomKidsForWebAsync(ct);
 
-    public async Task<WebChildInfoDto> GetRandomSingleKidForWeb(CancellationToken ct = default)
-    {
-        var result = await _childInventoryClient.GetRandomSingleKidForWebAsync(ct);
-        return result ?? new WebChildInfoDto();
-    }
+    public async Task<WebChildInfoDto?> GetRandomSingleKidForWeb(CancellationToken ct = default) =>
+        await _childInventoryClient.GetRandomSingleKidForWebAsync(ct);
 
     public Task<byte[]?> GetChildPhoto(int noId, int childNumber, CancellationToken ct = default) =>
         _childInventoryClient.GetChildPhotoAsync(noId, childNumber, ct);

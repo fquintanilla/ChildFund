@@ -68,7 +68,7 @@ namespace ChildFund.Services.Models
         public string? Description { get; set; }
 
         [JsonPropertyName("<DueDate>k__BackingField")]
-        public string? DueDate { get; set; }
+        public DateTime? DueDate { get; set; }
 
         [JsonPropertyName("<FinCode>k__BackingField")]
         public int? FinCode { get; set; }

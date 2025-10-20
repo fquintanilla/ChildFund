@@ -21,10 +21,10 @@ public sealed class TransactionClient : ChildFundApiClient, ITransactionClient
     }
 
     public Task<List<AgpInfoDto>?> GetAGPByContactIdAsync(int contactId, CancellationToken ct = default) =>
-        GetAsync<List<AgpInfoDto>?>($"Transaction/GetAGPByContactID?contactId={contactId}", JsonDefaults.Options, ct);
+        GetAsync<List<AgpInfoDto>?>($"Transaction/GetAGPByContactID/{contactId}", JsonDefaults.Options, ct);
 
     public Task<AgpInfoDto?> GetAGPByIdAsync(int contactId, int agpId, CancellationToken ct = default) =>
-        GetAsync<AgpInfoDto?>($"Transaction/GetAGPByID?contactId={contactId}&agpId={agpId}", JsonDefaults.Options, ct);
+        GetAsync<AgpInfoDto?>($"Transaction/GetAGPByID/{contactId}?agpId={agpId}", JsonDefaults.Options, ct);
 
     public Task<List<TransactionInfoDto>?> GetTransactionsByIdAsync(TransactionInfoDto transactionInfo, CancellationToken ct = default) =>
         PostAsync<List<TransactionInfoDto>?>("Transaction/GetTransactionsByID", transactionInfo, JsonDefaults.Options, ct);

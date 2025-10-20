@@ -16,46 +16,27 @@ public class TransactionServiceRepository : ITransactionServiceRepository
         _transactionClient = transactionClient ?? throw new ArgumentNullException(nameof(transactionClient));
     }
 
-    public async Task<List<AgpInfoDto>> GetAGPByContactId(int contactId, CancellationToken ct = default)
-    {
-        var result = await _transactionClient.GetAGPByContactIdAsync(contactId, ct);
-        return result ?? new List<AgpInfoDto>();
-    }
+    public async Task<List<AgpInfoDto>?> GetAGPByContactId(int contactId, CancellationToken ct = default) =>
+        await _transactionClient.GetAGPByContactIdAsync(contactId, ct);
 
-    public async Task<AgpInfoDto> GetAGPByID(int contactId, int agpId, CancellationToken ct = default)
-    {
-        var result = await _transactionClient.GetAGPByIdAsync(contactId, agpId, ct);
-        return result ?? new AgpInfoDto();
-    }
+    public async Task<AgpInfoDto?> GetAGPByID(int contactId, int agpId, CancellationToken ct = default) =>
+        await _transactionClient.GetAGPByIdAsync(contactId, agpId, ct);
 
-    public async Task<List<TransactionInfoDto>> GetTransactionByID(TransactionInfoDto transactionInfo, CancellationToken ct = default)
-    {
-        var result = await _transactionClient.GetTransactionsByIdAsync(transactionInfo, ct);
-        return result ?? new List<TransactionInfoDto>();
-    }
+    public async Task<List<TransactionInfoDto>?> GetTransactionByID(TransactionInfoDto transactionInfo, CancellationToken ct = default) =>
+        await _transactionClient.GetTransactionsByIdAsync(transactionInfo, ct);
 
     public Task SendChangePasswordEmail(TransactionInfoDto transactionInfo, CancellationToken ct = default) =>
         _transactionClient.SendChangePasswordEmailAsync(transactionInfo, ct);
 
-    public async Task<EnvelopeDto> ValidateDonation(TransactionInfoDto transactionInfo, CancellationToken ct = default)
-    {
-        var result = await _transactionClient.ValidateDonationAsync(transactionInfo, ct);
-        return result ?? new EnvelopeDto();
-    }
+    public async Task<EnvelopeDto?> ValidateDonation(TransactionInfoDto transactionInfo, CancellationToken ct = default) =>
+        await _transactionClient.ValidateDonationAsync(transactionInfo, ct);
 
-    public async Task<EnvelopeDto> ValidatePayment(TransactionInfoDto transactionInfo, CancellationToken ct = default)
-    {
-        var result = await _transactionClient.ValidatePaymentAsync(transactionInfo, ct);
-        return result ?? new EnvelopeDto();
-    }
+    public async Task<EnvelopeDto?> ValidatePayment(TransactionInfoDto transactionInfo, CancellationToken ct = default) =>
+        await _transactionClient.ValidatePaymentAsync(transactionInfo, ct);
 
-    public async Task<EnvelopeDto> SubmitTransactionToQueue(TransactionInfoDto transaction, CancellationToken ct = default)
-    {
-        var result = await _transactionClient.SubmitTransactionToQueueAsync(transaction, ct);
-        return result ?? new EnvelopeDto();
-    }
+    public async Task<EnvelopeDto?> SubmitTransactionToQueue(TransactionInfoDto transaction, CancellationToken ct = default) =>
+        await _transactionClient.SubmitTransactionToQueueAsync(transaction, ct);
 
     public Task<bool> CreateCase(int contactId, string contactType, string subject, string question, Dictionary<string, byte[]>? attachmentData = null, CancellationToken ct = default) =>
         _transactionClient.CreateCaseAsync(contactId, contactType, subject, question, attachmentData, ct);
 }
-

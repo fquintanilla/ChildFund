@@ -3,11 +3,10 @@
 namespace ChildFund.Services.Models;
 
 /// <summary>
-/// Contact information DTO - extremely large model with many fields.
+/// Contact information DTO - matches old WCF auto-generated model JSON property names.
 /// </summary>
-public class ContactInfoDto
+public partial class ContactInfoDto
 {
-    // Underscore-prefixed properties (direct DataMember attributes)
     [JsonPropertyName("_acceptdffee")]
     public object? AcceptDfFee { get; set; }
 
@@ -69,31 +68,31 @@ public class ContactInfoDto
     public string? CtryCode { get; set; }
 
     [JsonPropertyName("_dateanniversary")]
-    public object? DateAnniversary { get; set; }
+    public DateTime? DateAnniversary { get; set; }
 
     [JsonPropertyName("_datecreated")]
-    public object? DateCreated { get; set; }
+    public DateTime? DateCreated { get; set; }
 
     [JsonPropertyName("_dateendstmtpull")]
-    public object? DateEndStmtPull { get; set; }
+    public DateTime? DateEndStmtPull { get; set; }
 
     [JsonPropertyName("_datelastcontribution")]
-    public object? DateLastContribution { get; set; }
+    public DateTime? DateLastContribution { get; set; }
 
     [JsonPropertyName("_datemodified")]
-    public object? DateModified { get; set; }
+    public DateTime? DateModified { get; set; }
 
     [JsonPropertyName("_datestartiocorrespond")]
-    public object? DateStartIoCorrespond { get; set; }
+    public DateTime? DateStartIoCorrespond { get; set; }
 
     [JsonPropertyName("_datestartstmtpull")]
-    public object? DateStartStmtPull { get; set; }
+    public DateTime? DateStartStmtPull { get; set; }
 
     [JsonPropertyName("_datestopiocorrespond")]
-    public object? DateStopIoCorrespond { get; set; }
+    public DateTime? DateStopIoCorrespond { get; set; }
 
     [JsonPropertyName("_dateundesirable")]
-    public object? DateUndesirable { get; set; }
+    public DateTime? DateUndesirable { get; set; }
 
     [JsonPropertyName("_deliverypoint")]
     public string? DeliveryPoint { get; set; }
@@ -344,7 +343,6 @@ public class ContactInfoDto
     [JsonPropertyName("_validateForSponsorship")]
     public bool ValidateForSponsorship { get; set; }
 
-    // k__BackingField properties
     [JsonPropertyName("<GiftMessage>k__BackingField")]
     public string? GiftMessage { get; set; }
 

@@ -38,13 +38,13 @@ public class AgpInfoDto
     public int ContactId { get; set; }
 
     [JsonPropertyName("<DateCreated>k__BackingField")]
-    public string? DateCreated { get; set; }
+    public DateTime? DateCreated { get; set; }
 
     [JsonPropertyName("<DateDfTaken>k__BackingField")]
-    public string? DateDfTaken { get; set; }
+    public DateTime? DateDfTaken { get; set; }
 
     [JsonPropertyName("<DateExpiration>k__BackingField")]
-    public string? DateExpiration { get; set; }
+    public DateTime? DateExpiration { get; set; }
 
     [JsonPropertyName("<FullName>k__BackingField")]
     public string? FullName { get; set; }

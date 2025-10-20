@@ -53,14 +53,6 @@ public static class ServiceCollectionExtensions
             .AddHttpMessageHandler<ThrottlingHeadersHandler>()
             .AddPolicyHandler(ChildFundApiClient.DefaultRetryPolicy());
 
-        services.AddHttpClient<IDonorPortalClient, DonorPortalClient>((sp, client) =>
-            {
-                ConfigureHttpClient(client, options);
-            })
-            .ConfigurePrimaryHttpMessageHandler(() => CreateHttpMessageHandler(options))
-            .AddHttpMessageHandler<ThrottlingHeadersHandler>()
-            .AddPolicyHandler(ChildFundApiClient.DefaultRetryPolicy());
-
         services.AddHttpClient<ILookupClient, LookupClient>((sp, client) =>
             {
                 ConfigureHttpClient(client, options);
@@ -70,6 +62,14 @@ public static class ServiceCollectionExtensions
             .AddPolicyHandler(ChildFundApiClient.DefaultRetryPolicy());
 
         services.AddHttpClient<ITransactionClient, TransactionClient>((sp, client) =>
+            {
+                ConfigureHttpClient(client, options);
+            })
+            .ConfigurePrimaryHttpMessageHandler(() => CreateHttpMessageHandler(options))
+            .AddHttpMessageHandler<ThrottlingHeadersHandler>()
+            .AddPolicyHandler(ChildFundApiClient.DefaultRetryPolicy());
+
+        services.AddHttpClient<IDonorClient, DonorPortalClient>((sp, client) =>
             {
                 ConfigureHttpClient(client, options);
             })

@@ -81,6 +81,7 @@ namespace ChildFund.Web.Infrastructure.Initialization
             context.Services.AddTransient<ILookupServiceRepository, LookupServiceRepository>();
             context.Services.AddTransient<IChildServiceRepository, ChildServiceRepository>();
             context.Services.AddTransient<ITransactionServiceRepository, TransactionServiceRepository>();
+            context.Services.AddTransient<IDonorServiceRepository, DonorPortalServiceRepository>();
 
             // ChildFund.Services infrastructure
             context.Services.AddSingleton<IThrottlingContextProvider, ThrottlingContextProvider>();

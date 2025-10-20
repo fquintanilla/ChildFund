@@ -11,7 +11,7 @@ public class TransactionInfoDto
     public long AdminContactId { get; set; }
 
     [JsonPropertyName("<AnniversaryDate>k__BackingField")]
-    public string? AnniversaryDate { get; set; }
+    public DateTime? AnniversaryDate { get; set; }
 
     [JsonPropertyName("<BankName>k__BackingField")]
     public string? BankName { get; set; }
@@ -149,10 +149,10 @@ public class TransactionInfoDto
     public string? PaymentCardholderZipcode { get; set; }
 
     [JsonPropertyName("<PaymentDateDfTaken>k__BackingField")]
-    public string? PaymentDateDfTaken { get; set; }
+    public DateTime? PaymentDateDfTaken { get; set; }
 
     [JsonPropertyName("<PaymentDateExpiration>k__BackingField")]
-    public string? PaymentDateExpiration { get; set; }
+    public DateTime? PaymentDateExpiration { get; set; }
 
     [JsonPropertyName("<PaymentDonorId>k__BackingField")]
     public int PaymentDonorId { get; set; }
@@ -179,10 +179,10 @@ public class TransactionInfoDto
     public ReturnMsg ReturnMessage { get; set; }
 
     [JsonPropertyName("<TransactionBetweenDate>k__BackingField")]
-    public string? TransactionBetweenDate { get; set; }
+    public DateTime? TransactionBetweenDate { get; set; }
 
     [JsonPropertyName("<TransactionCreateDate>k__BackingField")]
-    public string? TransactionCreateDate { get; set; }
+    public DateTime? TransactionCreateDate { get; set; }
 
     [JsonPropertyName("<TransactionExceptionSummary>k__BackingField")]
     public string[]? TransactionExceptionSummary { get; set; }
@@ -191,7 +191,7 @@ public class TransactionInfoDto
     public int TransactionId { get; set; }
 
     [JsonPropertyName("<TransactionModifiedDate>k__BackingField")]
-    public string? TransactionModifiedDate { get; set; }
+    public DateTime? TransactionModifiedDate { get; set; }
 
     [JsonPropertyName("<TransactionStatus>k__BackingField")]
     public string? TransactionStatus { get; set; }
