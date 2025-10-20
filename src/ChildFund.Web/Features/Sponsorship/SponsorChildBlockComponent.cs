@@ -1,17 +1,17 @@
-﻿using ChildFund.Services.Interfaces;
-using ChildFund.Web.Core.Settings;
+﻿using ChildFund.Web.Core.Settings;
 using ChildFund.Web.Features.CatalogContent.Variant;
 using ChildFund.Web.Infrastructure.Cms.Settings;
+using ChildFund.Web.Repositories;
 
 namespace ChildFund.Web.Features.Sponsorship
 {
-    public class SponsorChildBlockComponent(IChildInventoryClient client,
+    public class SponsorChildBlockComponent(IChildServiceRepository repo,
         ISettingsService settingsService,
         IContentLoader contentLoader) : AsyncBlockComponent<SponsorChildBlock>
     {
         protected override async Task<IViewComponentResult> InvokeComponentAsync(SponsorChildBlock currentContent)
         {
-            var kids = await client.GetRandomKidsForWebAsync();
+            var kids = await repo.GetRandomKidsForWeb();
             var take = currentContent.Count.GetValueOrDefault(6);
 
             var pageSettings = settingsService.GetSiteSettings<ReferencePageSettings>();
