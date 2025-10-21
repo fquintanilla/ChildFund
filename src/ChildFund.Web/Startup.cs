@@ -89,7 +89,13 @@ public class Startup(
             options.WebSocketEnabled = false;
         });
 
-        services.AddSession();
+        services.AddSession(options =>
+        {
+            options.IdleTimeout = TimeSpan.FromMinutes(20);
+            options.Cookie.HttpOnly = true;
+            options.Cookie.IsEssential = true;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        });
         services.AddCms();
         services.AddDisplay();
         services.AddTinyMce();

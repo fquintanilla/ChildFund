@@ -1,5 +1,6 @@
 using ChildFund.Services.Interfaces;
 using ChildFund.Services.Models;
+using ChildFund.Web.Infrastructure.Cms.Services;
 
 namespace ChildFund.Web.Repositories;
 
@@ -10,10 +11,28 @@ namespace ChildFund.Web.Repositories;
 public class DonorPortalServiceRepository : IDonorServiceRepository
 {
     private readonly IDonorClient _donorClient;
+    private readonly ICacheService _cache;
 
-    public DonorPortalServiceRepository(IDonorClient donorClient)
+    #region CacheKeys
+    private const string ContactIdByEmailCacheKeyPrefix = "ChildFund:Donor:ContactIdByEmail:v1:";
+    private const string ContactTaxTotalsCacheKeyPrefix = "ChildFund:Donor:TaxTotals:v1:";
+    private const string CSGStatementListCacheKeyPrefix = "ChildFund:Donor:CSGStatementList:v1:";
+    private const string CSGStatementCacheKeyPrefix = "ChildFund:Donor:CSGStatement:v1:";
+    private const string HearAboutUsCacheKey = "ChildFund:Donor:HearAboutUs:v1";
+    private const string BankNameCacheKeyPrefix = "ChildFund:Donor:BankName:v1:";
+    #endregion
+
+    #region CacheDurations
+    private const int ContactDataCacheDurationSeconds = 900; // 15 minutes for contact-specific data
+    private const int ReferenceDataCacheDurationSeconds = 3600; // 1 hour for reference/lookup data
+    #endregion
+
+    public DonorPortalServiceRepository(
+        IDonorClient donorClient,
+        ICacheService cache)
     {
         _donorClient = donorClient ?? throw new ArgumentNullException(nameof(donorClient));
+        _cache = cache ?? throw new ArgumentNullException(nameof(cache));
     }
 
     public async Task<List<ContactInfoDto>?> FindContacts(ContactInfoDto contactInfo, CancellationToken ct = default) =>
@@ -22,8 +41,16 @@ public class DonorPortalServiceRepository : IDonorServiceRepository
     public async Task<TransactionInfoDto?> GetContactById(int contactId, CancellationToken ct = default) =>
         await _donorClient.GetContactByIdAsync(contactId, ct);
 
-    public Task<int> GetContactIdByEmail(string email, CancellationToken ct = default) =>
-        _donorClient.GetContactIdByEmailAsync(email, ct);
+    public async Task<int> GetContactIdByEmail(string email, CancellationToken ct = default)
+    {
+        string cacheKey = $"{ContactIdByEmailCacheKeyPrefix}{email.ToLowerInvariant()}";
+        if (_cache.Exists(cacheKey))
+            return _cache.Get<int>(cacheKey);
+        var contactId = await _donorClient.GetContactIdByEmailAsync(email, ct);
+        if (contactId > 0)
+            _cache.AddBySeconds(cacheKey, contactId, ContactDataCacheDurationSeconds);
+        return contactId;
+    }
 
     public async Task<EnvelopeDto?> AddAgp(AgpInfoDto agpInfo, CancellationToken ct = default) =>
         await _donorClient.AddAgpAsync(agpInfo, ct);
@@ -31,14 +58,38 @@ public class DonorPortalServiceRepository : IDonorServiceRepository
     public async Task<EnvelopeDto?> UpdateContact(ContactUpdateInfoDto contactUpdateInfo, CancellationToken ct = default) =>
         await _donorClient.UpdateContactAsync(contactUpdateInfo, ct);
 
-    public async Task<TaxTotalInfoDto?> GetContactTaxTotals(int contactId, CancellationToken ct = default) =>
-        await _donorClient.GetContactTaxTotalsAsync(contactId, ct);
+    public async Task<TaxTotalInfoDto?> GetContactTaxTotals(int contactId, CancellationToken ct = default)
+    {
+        string cacheKey = $"{ContactTaxTotalsCacheKeyPrefix}{contactId}";
+        if (_cache.Exists(cacheKey))
+            return _cache.Get<TaxTotalInfoDto>(cacheKey);
+        var taxTotals = await _donorClient.GetContactTaxTotalsAsync(contactId, ct);
+        if (taxTotals != null)
+            _cache.AddBySeconds(cacheKey, taxTotals, ContactDataCacheDurationSeconds);
+        return taxTotals;
+    }
 
-    public async Task<Dictionary<string, string>?> GetCSGStatementList(int contactId, CancellationToken ct = default) =>
-        await _donorClient.GetCSGStatementListAsync(contactId, ct);
+    public async Task<Dictionary<string, string>?> GetCSGStatementList(int contactId, CancellationToken ct = default)
+    {
+        string cacheKey = $"{CSGStatementListCacheKeyPrefix}{contactId}";
+        if (_cache.Exists(cacheKey))
+            return _cache.Get<Dictionary<string, string>>(cacheKey);
+        var statementList = await _donorClient.GetCSGStatementListAsync(contactId, ct);
+        if (statementList != null)
+            _cache.AddBySeconds(cacheKey, statementList, ContactDataCacheDurationSeconds);
+        return statementList;
+    }
 
-    public Task<byte[]?> GetCSGStatement(string statementId, CancellationToken ct = default) =>
-        _donorClient.GetCSGStatementAsync(statementId, ct);
+    public async Task<byte[]?> GetCSGStatement(string statementId, CancellationToken ct = default)
+    {
+        string cacheKey = $"{CSGStatementCacheKeyPrefix}{statementId}";
+        if (_cache.Exists(cacheKey))
+            return _cache.Get<byte[]>(cacheKey);
+        var statementData = await _donorClient.GetCSGStatementAsync(statementId, ct);
+        if (statementData != null)
+            _cache.AddBySeconds(cacheKey, statementData, ContactDataCacheDurationSeconds);
+        return statementData;
+    }
 
     public async Task<List<EmailSubscriptionsInfoDto>?> GetEmailPublications(int contactId, CancellationToken ct = default) =>
         await _donorClient.GetEmailPublicationsAsync(contactId, ct);
@@ -46,8 +97,15 @@ public class DonorPortalServiceRepository : IDonorServiceRepository
     public Task<bool> GetHandlingFee(int contactId, CancellationToken ct = default) =>
         _donorClient.GetHandlingFeeAsync(contactId, ct);
 
-    public async Task<List<CodeInfoDto>?> GetHearAboutUs(CancellationToken ct = default) =>
-        await _donorClient.GetHearAboutUsAsync(ct);
+    public async Task<List<CodeInfoDto>?> GetHearAboutUs(CancellationToken ct = default)
+    {
+        if (_cache.Exists(HearAboutUsCacheKey))
+            return _cache.Get<List<CodeInfoDto>>(HearAboutUsCacheKey);
+        var hearAboutUsList = await _donorClient.GetHearAboutUsAsync(ct);
+        if (hearAboutUsList != null)
+            _cache.AddBySeconds(HearAboutUsCacheKey, hearAboutUsList, ReferenceDataCacheDurationSeconds);
+        return hearAboutUsList;
+    }
 
     public Task<int> GetLTELettersTotal(int contactId, string folderName, int childId, bool unreadOnly, CancellationToken ct = default) =>
         _donorClient.GetLTELettersTotalAsync(contactId, folderName, childId, unreadOnly, ct);
@@ -76,8 +134,16 @@ public class DonorPortalServiceRepository : IDonorServiceRepository
     public Task<bool> UpdateOptInByChild(int contactId, int noId, int childNumber, bool optIn, CancellationToken ct = default) =>
         _donorClient.UpdateOptInByChildAsync(contactId, noId, childNumber, optIn, ct);
 
-    public Task<string?> GetBankName(int routingNumber, CancellationToken ct = default) =>
-        _donorClient.GetBankNameAsync(routingNumber, ct);
+    public async Task<string?> GetBankName(int routingNumber, CancellationToken ct = default)
+    {
+        string cacheKey = $"{BankNameCacheKeyPrefix}{routingNumber}";
+        if (_cache.Exists(cacheKey))
+            return _cache.Get<string>(cacheKey);
+        var bankName = await _donorClient.GetBankNameAsync(routingNumber, ct);
+        if (!string.IsNullOrEmpty(bankName))
+            _cache.AddBySeconds(cacheKey, bankName, ReferenceDataCacheDurationSeconds);
+        return bankName;
+    }
 
     public async Task<EnvelopeDto?> ReplaceAgp(int contactId, int oldPaymentId, int paymentId, CancellationToken ct = default) =>
         await _donorClient.ReplaceAgpAsync(contactId, oldPaymentId, paymentId, ct);
