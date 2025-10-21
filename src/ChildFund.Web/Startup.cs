@@ -4,12 +4,12 @@ using ChildFund.Services.Extensions;
 using ChildFund.Web.Core.CustomRoutes.Error;
 using ChildFund.Web.Infrastructure;
 using ChildFund.Web.Infrastructure.Cms.Helpers;
-using ChildFund.Web.Infrastructure.Cms.Users;
 using ChildFund.Web.Infrastructure.Commerce.Extensions;
 using ChildFund.Web.Infrastructure.Display;
 using ChildFund.Web.Infrastructure.Initialization;
 using ChildFund.Web.Infrastructure.Middlewares;
 using ChildFund.Web.Infrastructure.Rendering;
+using ChildFund.Web.Infrastructure.Security;
 using EPiServer.Cms.TinyMce;
 using EPiServer.Marketing.Testing.Web.Initializers;
 using Geta.Optimizely.Categories.Configuration;
@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Net.Security;
 using System.Text.Json.Serialization;
+using ChildFund.Web.Infrastructure.Cms.Users;
 using UNRVLD.ODP.VisitorGroups.Initilization;
 
 namespace ChildFund.Web;
@@ -94,17 +95,11 @@ public class Startup(
         services.AddDisplay();
         services.AddTinyMce();
 
-        services.AddCmsAspNetIdentity<SiteUser>(o =>
-        {
-            if (string.IsNullOrEmpty(o.ConnectionStringOptions?.ConnectionString))
-            {
-                o.ConnectionStringOptions = new ConnectionStringOptions
-                {
-                    Name = "EPiServerDB",
-                    ConnectionString = configuration.GetConnectionString("EPiServerDB")
-                };
-            }
-        });
+        // EITHER: Entra ID
+        //services.UseEntraIdForCms(configuration);
+
+        // OR: Optimizely CMS Identity (local DB)
+        services.UseOptimizelyCmsIdentity<SiteUser>(configuration);
 
         services.AddDetection();
         services.AddControllersWithViews()
@@ -126,10 +121,7 @@ public class Startup(
         //Commerce
         services.AddCommerce();
 
-        services.AddAdminUserRegistration(opt =>
-            {
-                opt.Behavior = EPiServer.Cms.Shell.UI.RegisterAdminUserBehaviors.Enabled;
-            });
+        
 
         services.AddEmbeddedLocalization<Startup>();
         services.AddTinyMceConfiguration();
