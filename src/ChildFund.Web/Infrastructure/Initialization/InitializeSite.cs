@@ -83,6 +83,9 @@ namespace ChildFund.Web.Infrastructure.Initialization
             context.Services.AddTransient<ITransactionServiceRepository, TransactionServiceRepository>();
             context.Services.AddTransient<IDonorServiceRepository, DonorPortalServiceRepository>();
 
+            // Session manager
+            context.Services.AddScoped<ISessionManager, SessionManager>();
+
             // ChildFund.Services infrastructure
             context.Services.AddSingleton<IThrottlingContextProvider, ThrottlingContextProvider>();
 
