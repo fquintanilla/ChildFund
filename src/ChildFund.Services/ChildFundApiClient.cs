@@ -14,11 +14,13 @@ namespace ChildFund.Services;
 /// <remarks>
 /// HttpClient is managed by IHttpClientFactory and should NOT be disposed by derived classes.
 /// The factory handles proper connection pooling, lifetime management, and disposal.
+/// Supports both synchronous and asynchronous API endpoints based on configuration.
 /// </remarks>
 public abstract class ChildFundApiClient
 {
     protected readonly HttpClient Http;
     private readonly ITokenProvider _tokenProvider;
+    private readonly bool _useAsyncEndpoints;
 
     protected ChildFundApiClient(
         HttpClient http,
@@ -31,11 +33,14 @@ public abstract class ChildFundApiClient
         if (options?.Value == null)
             throw new ArgumentNullException(nameof(options));
 
-        Http.BaseAddress = new Uri(options.Value.BaseUrl.TrimEnd('/') + "/");
+        var opts = options.Value;
+        _useAsyncEndpoints = opts.UseAsyncEndpoints;
+        Http.BaseAddress = new Uri(opts.EffectiveBaseUrl.TrimEnd('/') + "/");
     }
 
     /// <summary>
     /// Performs an authenticated GET request and deserializes the response.
+    /// Automatically appends "Async" to the path when UseAsyncEndpoints is enabled.
     /// </summary>
     protected async Task<T> GetAsync<T>(
         string relativePath,
@@ -43,16 +48,18 @@ public abstract class ChildFundApiClient
         CancellationToken ct = default)
     {
         await EnsureAuthAsync(ct);
-        
-        using var resp = await Http.GetAsync(relativePath, ct);
+
+        var effectivePath = _useAsyncEndpoints ? AppendAsyncToPath(relativePath) : relativePath;
+        using var resp = await Http.GetAsync(effectivePath, ct);
         resp.EnsureSuccessStatusCode();
-        
+
         await using var stream = await resp.Content.ReadAsStreamAsync(ct);
         return (await JsonSerializer.DeserializeAsync<T>(stream, jsonOptions ?? JsonDefaults.Options, ct))!;
     }
 
     /// <summary>
     /// Performs an authenticated POST request and deserializes the response.
+    /// Automatically appends "Async" to the path when UseAsyncEndpoints is enabled.
     /// </summary>
     protected async Task<T> PostAsync<T>(
         string relativePath,
@@ -62,6 +69,7 @@ public abstract class ChildFundApiClient
     {
         await EnsureAuthAsync(ct);
 
+        var effectivePath = _useAsyncEndpoints ? AppendAsyncToPath(relativePath) : relativePath;
         using var content = body is null
             ? null
             : new StringContent(
@@ -69,12 +77,55 @@ public abstract class ChildFundApiClient
                 System.Text.Encoding.UTF8,
                 "application/json");
 
-        using var resp = await Http.PostAsync(relativePath, content, ct);
+        using var resp = await Http.PostAsync(effectivePath, content, ct);
         resp.EnsureSuccessStatusCode();
-        
+
         await using var stream = await resp.Content.ReadAsStreamAsync(ct);
 
         return (await JsonSerializer.DeserializeAsync<T>(stream, jsonOptions ?? JsonDefaults.Options, ct))!;
+    }
+
+    /// <summary>
+    /// Performs an authenticated GET request and returns the raw HttpResponseMessage.
+    /// Automatically appends "Async" to the path when UseAsyncEndpoints is enabled.
+    /// </summary>
+    protected async Task<HttpResponseMessage> GetResponseAsync(
+        string relativePath,
+        CancellationToken ct = default)
+    {
+        await EnsureAuthAsync(ct);
+
+        var effectivePath = _useAsyncEndpoints ? AppendAsyncToPath(relativePath) : relativePath;
+        var resp = await Http.GetAsync(effectivePath, ct);
+        resp.EnsureSuccessStatusCode();
+
+        return resp;
+    }
+
+    /// <summary>
+    /// Performs an authenticated POST request and returns the raw HttpResponseMessage.
+    /// Automatically appends "Async" to the path when UseAsyncEndpoints is enabled.
+    /// </summary>
+    protected async Task<HttpResponseMessage> PostResponseAsync(
+        string relativePath,
+        object? body = null,
+        JsonSerializerOptions? jsonOptions = null,
+        CancellationToken ct = default)
+    {
+        await EnsureAuthAsync(ct);
+
+        var effectivePath = _useAsyncEndpoints ? AppendAsyncToPath(relativePath) : relativePath;
+        using var content = body is null
+            ? null
+            : new StringContent(
+                JsonSerializer.Serialize(body, jsonOptions ?? JsonDefaults.Options),
+                System.Text.Encoding.UTF8,
+                "application/json");
+
+        var resp = await Http.PostAsync(effectivePath, content, ct);
+        resp.EnsureSuccessStatusCode();
+
+        return resp;
     }
 
     private async Task EnsureAuthAsync(CancellationToken ct)
@@ -85,13 +136,44 @@ public abstract class ChildFundApiClient
     }
 
     /// <summary>
+    /// Appends "Async" to the last segment of the path.
+    /// Example: "ChildInventory/GetRandomKidsForWeb" becomes "ChildInventory/GetRandomKidsForWebAsync"
+    /// </summary>
+    private static string AppendAsyncToPath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return path;
+
+        // Handle query strings
+        var queryIndex = path.IndexOf('?');
+        if (queryIndex >= 0)
+        {
+            var pathPart = path.Substring(0, queryIndex);
+            var queryPart = path.Substring(queryIndex);
+            return AppendAsyncToPath(pathPart) + queryPart;
+        }
+
+        // Find the last segment after the last slash
+        var lastSlashIndex = path.LastIndexOf('/');
+        if (lastSlashIndex >= 0 && lastSlashIndex < path.Length - 1)
+        {
+            var beforeMethod = path.Substring(0, lastSlashIndex + 1);
+            var method = path.Substring(lastSlashIndex + 1);
+            return beforeMethod + method + "Async";
+        }
+
+        // No slash found, just append to the entire path
+        return path + "Async";
+    }
+
+    /// <summary>
     /// Default retry policy for transient HTTP errors (network failures, 5xx, 429).
     /// Uses exponential backoff: 200ms, 400ms, 800ms.
+    /// Only retry once.
     /// </summary>
     public static IAsyncPolicy<HttpResponseMessage> DefaultRetryPolicy() =>
         HttpPolicyExtensions
             .HandleTransientHttpError()
             .OrResult(msg => (int)msg.StatusCode == 429)
-            .WaitAndRetryAsync(3, attempt => TimeSpan.FromMilliseconds(200 * Math.Pow(2, attempt)));
+            .WaitAndRetryAsync(1, attempt => TimeSpan.FromMilliseconds(200 * Math.Pow(2, attempt)));
 }
-

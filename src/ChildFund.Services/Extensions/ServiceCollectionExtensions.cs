@@ -1,4 +1,5 @@
 using ChildFund.Services.ApiClients;
+using ChildFund.Services.Handlers;
 using ChildFund.Services.Interfaces;
 using ChildFund.Services.Providers;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +28,9 @@ public static class ServiceCollectionExtensions
         // Register TokenProvider as singleton for token caching
         services.AddSingleton<ITokenProvider, TokenProvider>();
 
+        // Register throttling handler as transient (one per HTTP client)
+        services.AddTransient<ThrottlingHeadersHandler>();
+
         // Build service provider to get options for HttpMessageHandler configuration
         var serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetRequiredService<IOptions<ChildFundApiOptions>>().Value;
@@ -37,6 +41,7 @@ public static class ServiceCollectionExtensions
                 ConfigureHttpClient(client, options);
             })
             .ConfigurePrimaryHttpMessageHandler(() => CreateHttpMessageHandler(options))
+            .AddHttpMessageHandler<ThrottlingHeadersHandler>()
             .AddPolicyHandler(ChildFundApiClient.DefaultRetryPolicy());
 
         // Configure HTTP client for API calls
@@ -45,13 +50,31 @@ public static class ServiceCollectionExtensions
                 ConfigureHttpClient(client, options);
             })
             .ConfigurePrimaryHttpMessageHandler(() => CreateHttpMessageHandler(options))
+            .AddHttpMessageHandler<ThrottlingHeadersHandler>()
             .AddPolicyHandler(ChildFundApiClient.DefaultRetryPolicy());
 
-        services.AddHttpClient<IDonorPortalClient, DonorPortalClient>((sp, client) =>
+        services.AddHttpClient<ILookupClient, LookupClient>((sp, client) =>
             {
                 ConfigureHttpClient(client, options);
             })
             .ConfigurePrimaryHttpMessageHandler(() => CreateHttpMessageHandler(options))
+            .AddHttpMessageHandler<ThrottlingHeadersHandler>()
+            .AddPolicyHandler(ChildFundApiClient.DefaultRetryPolicy());
+
+        services.AddHttpClient<ITransactionClient, TransactionClient>((sp, client) =>
+            {
+                ConfigureHttpClient(client, options);
+            })
+            .ConfigurePrimaryHttpMessageHandler(() => CreateHttpMessageHandler(options))
+            .AddHttpMessageHandler<ThrottlingHeadersHandler>()
+            .AddPolicyHandler(ChildFundApiClient.DefaultRetryPolicy());
+
+        services.AddHttpClient<IDonorClient, DonorPortalClient>((sp, client) =>
+            {
+                ConfigureHttpClient(client, options);
+            })
+            .ConfigurePrimaryHttpMessageHandler(() => CreateHttpMessageHandler(options))
+            .AddHttpMessageHandler<ThrottlingHeadersHandler>()
             .AddPolicyHandler(ChildFundApiClient.DefaultRetryPolicy());
 
         return services;
@@ -59,10 +82,11 @@ public static class ServiceCollectionExtensions
 
     /// <summary>
     /// Configures common HTTP client settings including base address, timeout, and headers.
+    /// Uses the effective base URL based on sync/async configuration.
     /// </summary>
     private static void ConfigureHttpClient(HttpClient client, ChildFundApiOptions options)
     {
-        client.BaseAddress = new Uri(options.BaseUrl.TrimEnd('/') + "/");
+        client.BaseAddress = new Uri(options.EffectiveBaseUrl.TrimEnd('/') + "/");
         client.Timeout = TimeSpan.FromSeconds(options.RequestTimeoutSeconds);
         client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
         client.DefaultRequestHeaders.Connection.ParseAdd("keep-alive");

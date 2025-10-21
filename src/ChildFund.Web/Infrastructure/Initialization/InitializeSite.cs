@@ -1,4 +1,5 @@
-﻿using ChildFund.Web.Core.CustomRoutes.Error;
+﻿using ChildFund.Services.Interfaces;
+using ChildFund.Web.Core.CustomRoutes.Error;
 using ChildFund.Web.Features.CatalogContent.Services;
 using ChildFund.Web.Features.Checkout.Payments;
 using ChildFund.Web.Features.Checkout.Services;
@@ -20,6 +21,8 @@ using ChildFund.Web.Infrastructure.Commerce.Markets;
 using ChildFund.Web.Infrastructure.Commerce.Pricing;
 using ChildFund.Web.Infrastructure.Display;
 using ChildFund.Web.Infrastructure.Rendering;
+using ChildFund.Web.Infrastructure.Services;
+using ChildFund.Web.Repositories;
 using Episerver.Marketing.Connector.Framework.Services;
 using EPiServer.Commerce.Internal.Migration;
 using EPiServer.Framework;
@@ -73,6 +76,19 @@ namespace ChildFund.Web.Infrastructure.Initialization
             context.Services.AddTransient<CheckoutService>();
             context.Services.AddSingleton<ISettingsService, SettingsService>();
             context.Services.AddSingleton<ICreditCardService, CreditCardService>();
+
+            //Repositories to ChildFund services
+            context.Services.AddTransient<ILookupServiceRepository, LookupServiceRepository>();
+            context.Services.AddTransient<IChildServiceRepository, ChildServiceRepository>();
+            context.Services.AddTransient<ITransactionServiceRepository, TransactionServiceRepository>();
+            context.Services.AddTransient<IDonorServiceRepository, DonorPortalServiceRepository>();
+
+            // Session manager
+            context.Services.AddScoped<ISessionManager, SessionManager>();
+
+            // ChildFund.Services infrastructure
+            context.Services.AddSingleton<IThrottlingContextProvider, ThrottlingContextProvider>();
+
             context.Services.AddSingleton<ServiceAccessor<IContentRouteHelper>>(locator =>
                 locator.GetInstance<IContentRouteHelper>);
             context.Services.AddTransient<IModelBinderProvider, ModelBinderProvider>();
