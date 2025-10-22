@@ -14,6 +14,9 @@ namespace ChildFund.Web.Features.Login
         public IActionResult Google([FromQuery] string returnUrl = "/") =>
             Challenge(new AuthenticationProperties { RedirectUri = returnUrl }, "google");
 
+        public IActionResult Facebook([FromQuery] string returnUrl = "/") =>
+            Challenge(new AuthenticationProperties { RedirectUri = returnUrl }, "facebook");
+
         public async Task<IActionResult> Logout()
         {
             var authProvider = User.FindFirst(SecurityConstants.AuthProvider)?.Value;

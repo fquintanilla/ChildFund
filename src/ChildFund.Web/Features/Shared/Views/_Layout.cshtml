@@ -8,6 +8,7 @@
     var isAuth = User.Identity?.IsAuthenticated ?? false;
     var loginUrl = Url.Action("Index", "Login");
     var loginGoogleUrl = Url.Action("Google", "Login");
+    var loginFacebookUrl = Url.Action("Facebook", "Login");
     var logoutUrl = Url.Action("Logout", "Login");
 }
 
@@ -48,6 +49,7 @@
                     {
                         <li class="nav-item"><a class="nav-link" href="@loginUrl">Login Entra</a></li>
                         <li class="nav-item"><a class="nav-link" href="@loginGoogleUrl">Login Google</a></li>
+                        <li class="nav-item"><a class="nav-link" href="@loginFacebookUrl">Login Facebook</a></li>
                         <li class="nav-item"><a class="nav-link" href="@Url.Content("~/util/login")">Login Opti</a></li>
                     }
                     <li class="nav-item"><a class="nav-link" href="@Url.Content("~/")">Home</a></li>

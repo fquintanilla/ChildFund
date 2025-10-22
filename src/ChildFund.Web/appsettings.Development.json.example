@@ -16,8 +16,14 @@
     "AzureClientID": "",
     "AzureClientSecret": "",
     "CallbackPath": "/signin-oidc",
-    "GoogleClientID": "",
-    "GoogleClientSecret": ""
+    "Google": {
+      "ClientID": "",
+      "ClientSecret": ""
+    },
+    "Facebook": {
+      "AppID": "",
+      "AppSecret": ""
+    }
   },
   "EPiServer": {
     "Cms": {

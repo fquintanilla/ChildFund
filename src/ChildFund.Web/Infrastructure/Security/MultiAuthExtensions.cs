@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ChildFund.Web.Infrastructure.Security
 {
-    public static class DualAuthExtensions
+    public static class MultiAuthExtensions
     {
         private static readonly string IdentityCookieScheme = IdentityConstants.ApplicationScheme;
 
@@ -13,7 +13,7 @@ namespace ChildFund.Web.Infrastructure.Security
         ///  - authenticate with whichever cookie is present,
         ///  - challenge based on the request path (/login => Entra, /util/login => Optimizely).
         /// </summary>
-        public static IServiceCollection UseDualAuthGateway(this IServiceCollection services)
+        public static IServiceCollection UseMultiAuthGateway(this IServiceCollection services)
         {
             services.AddAuthentication() // adds to the existing auth builder
                                          // Default AUTHENTICATE: choose the cookie we actually have
@@ -42,7 +42,10 @@ namespace ChildFund.Web.Infrastructure.Security
 
                         // Your rule:
                         if (path.StartsWith("/login/google"))
-                            return SecurityConstants.GoogleChallengeScheme;           // Google
+                            return SecurityConstants.GoogleChallengeScheme;
+
+                        if (path.StartsWith("/login/facebook"))
+                            return SecurityConstants.FacebookChallengeScheme;
 
                         if (path.StartsWith("/login"))
                             return SecurityConstants.AzureChallengeScheme;          // Entra ID

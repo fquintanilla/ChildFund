@@ -186,11 +186,11 @@ namespace ChildFund.Web.Infrastructure.Security
             services.AddAuthentication()
                 .AddGoogle("google", options =>
                 {
-                    options.SignInScheme = SecurityConstants.AzureCookieScheme;    // write the same cookie after Google login
+                    options.SignInScheme = SecurityConstants.AzureCookieScheme;
 
                     // Google credentials
-                    options.ClientId = configuration["Authentication:GoogleClientID"]!;
-                    options.ClientSecret = configuration["Authentication:GoogleClientSecret"]!;
+                    options.ClientId = configuration["Authentication:Google:ClientID"]!;
+                    options.ClientSecret = configuration["Authentication:Google:ClientSecret"]!;
 
                     // Ensure standard claims are present for Optimizely sync
                     options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
@@ -203,6 +203,52 @@ namespace ChildFund.Web.Infrastructure.Security
                         if (ctx.Principal?.Identity is ClaimsIdentity id)
                         {
                             id.AddClaim(new Claim(SecurityConstants.AuthProvider, "google"));
+                        }
+                        return Task.CompletedTask;
+                    };
+                });
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds Facebook OAuth for CMS sign-in. Uses the shared app cookie ("azure-cookie").
+        /// </summary>
+        public static IServiceCollection UseFacebookForCms(this IServiceCollection services, IConfiguration configuration)
+        {
+            var appId = configuration["Authentication:Facebook:AppId"]!;
+            var appSecret = configuration["Authentication:Facebook:AppSecret"]!;
+
+            services.AddAuthentication()
+                .AddFacebook("facebook", options =>
+                {
+                    options.SignInScheme = SecurityConstants.AzureCookieScheme;
+
+                    options.AppId = appId;
+                    options.AppSecret = appSecret;
+
+                    // Ask for the data we need for Optimizely user sync
+                    options.Scope.Clear();
+                    options.Scope.Add("email");
+                    options.Scope.Add("public_profile");
+
+                    // Facebook uses these field names; include them so claims are populated
+                    options.Fields.Add("email");
+                    options.Fields.Add("first_name");
+                    options.Fields.Add("last_name");
+                    options.Fields.Add("name");
+
+                    // Map to .NET claim types used by the synchronizer
+                    options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+                    options.ClaimActions.MapJsonKey(ClaimTypes.GivenName, "first_name");
+                    options.ClaimActions.MapJsonKey(ClaimTypes.Surname, "last_name");
+
+                    // Tag which provider logged the user in
+                    options.Events.OnCreatingTicket = ctx =>
+                    {
+                        if (ctx.Principal?.Identity is ClaimsIdentity id)
+                        {
+                            id.AddClaim(new Claim(SecurityConstants.AuthProvider, "facebook"));
                         }
                         return Task.CompletedTask;
                     };

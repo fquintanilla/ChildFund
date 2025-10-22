@@ -101,10 +101,12 @@ public class Startup(
         services.AddDisplay();
         services.AddTinyMce();
 
-        services.UseEntraIdForCms(configuration);
+        // Authentication
         services.UseOptimizelyCmsIdentity<SiteUser>(configuration);
+        services.UseEntraIdForCms(configuration);
         services.UseGoogleForCms(configuration);
-        services.UseDualAuthGateway();
+        services.UseFacebookForCms(configuration);
+        services.UseMultiAuthGateway();
 
         services.AddDetection();
         services.AddControllersWithViews()
