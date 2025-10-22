@@ -4,6 +4,7 @@ using ChildFund.Services.Extensions;
 using ChildFund.Web.Core.CustomRoutes.Error;
 using ChildFund.Web.Infrastructure;
 using ChildFund.Web.Infrastructure.Cms.Helpers;
+using ChildFund.Web.Infrastructure.Cms.Users;
 using ChildFund.Web.Infrastructure.Commerce.Extensions;
 using ChildFund.Web.Infrastructure.Display;
 using ChildFund.Web.Infrastructure.Initialization;
@@ -24,7 +25,6 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Net.Security;
 using System.Text.Json.Serialization;
-using ChildFund.Web.Infrastructure.Cms.Users;
 using UNRVLD.ODP.VisitorGroups.Initilization;
 
 namespace ChildFund.Web;
@@ -103,10 +103,10 @@ public class Startup(
 
         // Authentication
         services.UseOptimizelyCmsIdentity<SiteUser>(configuration);
-        services.UseEntraIdForCms(configuration);
+        /*services.UseEntraIdForCms(configuration);
         services.UseGoogleForCms(configuration);
         services.UseFacebookForCms(configuration);
-        services.UseMultiAuthGateway();
+        services.UseMultiAuthGateway();*/
 
         services.AddDetection();
         services.AddControllersWithViews()
@@ -128,7 +128,7 @@ public class Startup(
         //Commerce
         services.AddCommerce();
 
-        
+
 
         services.AddEmbeddedLocalization<Startup>();
         services.AddTinyMceConfiguration();
