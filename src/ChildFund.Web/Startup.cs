@@ -101,11 +101,10 @@ public class Startup(
         services.AddDisplay();
         services.AddTinyMce();
 
-        // EITHER: Entra ID
-        //services.UseEntraIdForCms(configuration);
-
-        // OR: Optimizely CMS Identity (local DB)
+        services.UseEntraIdForCms(configuration);
         services.UseOptimizelyCmsIdentity<SiteUser>(configuration);
+        services.UseGoogleForCms(configuration);
+        services.UseDualAuthGateway();
 
         services.AddDetection();
         services.AddControllersWithViews()

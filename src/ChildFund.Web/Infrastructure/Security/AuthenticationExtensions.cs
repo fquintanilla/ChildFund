@@ -62,7 +62,7 @@ namespace ChildFund.Web.Infrastructure.Security
             // Pull credentials from configuration
             var clientId = configuration["Authentication:AzureClientID"];
             var clientSecret = configuration["Authentication:AzureClientSecret"];
-            var azureAuthority = configuration["Authentication:azureAuthority"];
+            var azureAuthority = configuration["Authentication:AzureAuthority"];
             var callbackPath = configuration["Authentication:CallbackPath"] ?? "/signin-oidc";
 
             services.AddAuthentication(options =>
@@ -144,6 +144,9 @@ namespace ChildFund.Web.Infrastructure.Security
                             Encoding.ASCII.GetBytes(context.Exception.Message));
                         return Task.CompletedTask;
                     },
+                    // OnTokenValidated (Entra) already syncs users/roles. For Google, the handler doesn't
+                    // raise that same event; however, the cookie gets issued via the same azure-cookie.
+                    // We already sync on cookie sign-in in your AddCookie(...).Events.OnSignedIn handler.
                     OnTokenValidated = ctx =>
                     {
                         var redirect = ctx.Properties?.RedirectUri;
@@ -152,6 +155,12 @@ namespace ChildFund.Web.Infrastructure.Security
                             uri.IsAbsoluteUri)
                         {
                             ctx.Properties.RedirectUri = uri.PathAndQuery;
+                        }
+
+                        // Tag principal with provider
+                        if (ctx.Principal?.Identity is ClaimsIdentity id)
+                        {
+                            id.AddClaim(new Claim(SecurityConstants.AuthProvider, "entra"));
                         }
 
                         // Background sync of user + roles to Optimizely
@@ -163,6 +172,41 @@ namespace ChildFund.Web.Infrastructure.Security
                     }
                 };
             });
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds Google OAuth for CMS sign-in (shares the same app cookie).
+        /// </summary>
+        public static IServiceCollection UseGoogleForCms(this IServiceCollection services, IConfiguration configuration)
+        {
+            // We will sign in to the SAME cookie used for Entra ID so the rest of the app
+            // only has to look for one external-auth cookie.
+            services.AddAuthentication()
+                .AddGoogle("google", options =>
+                {
+                    options.SignInScheme = SecurityConstants.AzureCookieScheme;    // write the same cookie after Google login
+
+                    // Google credentials
+                    options.ClientId = configuration["Authentication:GoogleClientID"]!;
+                    options.ClientSecret = configuration["Authentication:GoogleClientSecret"]!;
+
+                    // Ensure standard claims are present for Optimizely sync
+                    options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+                    options.ClaimActions.MapJsonKey(ClaimTypes.GivenName, "given_name");
+                    options.ClaimActions.MapJsonKey(ClaimTypes.Surname, "family_name");
+
+                    // Tag principal with provider
+                    options.Events.OnCreatingTicket = ctx =>
+                    {
+                        if (ctx.Principal?.Identity is ClaimsIdentity id)
+                        {
+                            id.AddClaim(new Claim(SecurityConstants.AuthProvider, "google"));
+                        }
+                        return Task.CompletedTask;
+                    };
+                });
 
             return services;
         }

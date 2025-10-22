@@ -11,6 +11,14 @@
     "EcfSqlConnection": "Data Source=localhost;Initial Catalog=Childfund.Commerce;User Id=sa;Password=UPDATE_HERE;MultipleActiveResultSets=True;TrustServerCertificate=True",
     "EPiServerDB": "Data Source=localhost;Initial Catalog=Childfund;User Id=sa;Password=UPDATE_HERE;MultipleActiveResultSets=True;TrustServerCertificate=True"
   },
+  "Authentication": {
+    "AzureAuthority": "",
+    "AzureClientID": "",
+    "AzureClientSecret": "",
+    "CallbackPath": "/signin-oidc",
+    "GoogleClientID": "",
+    "GoogleClientSecret": ""
+  },
   "EPiServer": {
     "Cms": {
       "MappedRoles": {
