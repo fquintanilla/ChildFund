@@ -38,7 +38,8 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="@(isAuth ? logoutUrl : loginUrl)">@(isAuth ? "Logout" : "Login")</a></li>
+                <li class="nav-item"><a class="nav-link" href="@(isAuth ? logoutUrl : loginUrl)">@(isAuth ? "Logout" : "Login Entra")</a></li>
+                <li class="nav-item"><a class="nav-link" href="@Url.Content("~/login/google")">Login Google</a></li>
                 <li class="nav-item"><a class="nav-link" href="@Url.Content("~/")">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="@Url.Content("~/cart")">Cart</a></li>
             </ul>

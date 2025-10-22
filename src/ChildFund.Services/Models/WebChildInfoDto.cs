@@ -14,7 +14,7 @@ public class WebChildInfoDto
     public string? CountryName { get; set; }
 
     [JsonPropertyName("<DOB>k__BackingField")]
-    public DateTime? DateOfBirth { get; set; }
+    public string? DateOfBirth { get; set; }
 
     [JsonPropertyName("<EnterpriseLegacyId>k__BackingField")]
     public string? EnterpriseLegacyId { get; set; }

@@ -103,9 +103,9 @@ public class Startup(
 
         // EITHER: Entra ID
         //services.UseEntraIdForCms(configuration);
-
-        // OR: Optimizely CMS Identity (local DB)
         services.UseOptimizelyCmsIdentity<SiteUser>(configuration);
+        //services.UseGoogleForCms(configuration);
+        //services.UseDualAuthGateway();
 
         services.AddDetection();
         services.AddControllersWithViews()

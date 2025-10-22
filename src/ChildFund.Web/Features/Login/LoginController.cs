@@ -1,20 +1,35 @@
-﻿using ChildFund.Web.Features.Shared.ViewModels;
+﻿using ChildFund.Web.Infrastructure.Security;
+using EPiServer.Shell.Security;
 using Microsoft.AspNetCore.Authentication;
 
 namespace ChildFund.Web.Features.Login
 {
-    public class LoginController(UrlResolver urlResolver) : PageController<LoginPage>
+    public class LoginController(
+        UrlResolver urlResolver,
+        UISignInManager signInManager) : PageController<LoginPage>
     {
-        public IActionResult Index([FromQuery] string returnUrl = "/")
-            => Challenge(new AuthenticationProperties { RedirectUri = returnUrl }, "azure");
+        [HttpGet("")]
+        public IActionResult Index([FromQuery] string returnUrl = "/") =>
+            Challenge(new AuthenticationProperties { RedirectUri = returnUrl }, "azure");
+
+        [HttpGet("google")]
+        public IActionResult Google([FromQuery] string returnUrl = "/") =>
+            Challenge(new AuthenticationProperties { RedirectUri = returnUrl }, "google");
 
         public async Task<IActionResult> Logout()
         {
-            //comment out old logout code
-            //await UISignInManager.Service.SignOutAsync();
-            //return Redirect(HttpContext.RequestServices.GetService<UrlResolver>().GetUrl(PageContext.ContentLink, PageContext.LanguageID));
-            await ControllerContext.HttpContext.SignOutAsync("azure-cookie");
-            HttpContext.Response.Cookies.Delete($".AspNetCore.{"azure-cookie"}");
+            var authProvider = User.FindFirst(SecurityConstants.AuthProvider)?.Value;
+
+            if (string.IsNullOrEmpty(authProvider))
+            {
+                await signInManager.SignOutAsync();
+            }
+            else // Entra ID or Google
+            {
+                await ControllerContext.HttpContext.SignOutAsync(SecurityConstants.AzureCookieScheme);
+                HttpContext.Response.Cookies.Delete($".AspNetCore.{SecurityConstants.AzureCookieScheme}");
+            }
+            
             return Redirect(urlResolver.GetUrl(PageContext.ContentLink, PageContext.LanguageID) ?? "/");
         }
     }

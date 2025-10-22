@@ -5,8 +5,6 @@ namespace ChildFund.Web.Infrastructure.Security
 {
     public static class DualAuthExtensions
     {
-        private const string AzureCookieScheme = "azure-cookie";                 // your OIDC cookie
-        private const string AzureChallengeScheme = "azure";                     // your OIDC scheme
         private static readonly string IdentityCookieScheme = IdentityConstants.ApplicationScheme;
 
         /// <summary>
@@ -25,14 +23,14 @@ namespace ChildFund.Web.Infrastructure.Security
                     {
                         // NOTE: cookie names are ".AspNetCore." + scheme by default
                         var cookies = ctx.Request.Cookies;
-                        if (cookies.ContainsKey(".AspNetCore." + AzureCookieScheme))
-                            return AzureCookieScheme;
+                        if (cookies.ContainsKey(".AspNetCore." + SecurityConstants.AzureCookieScheme))
+                            return SecurityConstants.AzureCookieScheme;
 
                         if (cookies.ContainsKey(".AspNetCore." + IdentityCookieScheme))
                             return IdentityCookieScheme;
 
                         // no cookie yet — fall back to Azure cookie for auth checks
-                        return AzureCookieScheme;
+                        return SecurityConstants.AzureCookieScheme;
                     };
                 })
                 // Default CHALLENGE: choose provider by path
@@ -43,14 +41,17 @@ namespace ChildFund.Web.Infrastructure.Security
                         var path = ctx.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
 
                         // Your rule:
+                        if (path.StartsWith("/login/google"))
+                            return SecurityConstants.GoogleChallengeScheme;           // Google
+
                         if (path.StartsWith("/login"))
-                            return AzureChallengeScheme;          // Entra ID
+                            return SecurityConstants.AzureChallengeScheme;          // Entra ID
 
                         if (path.StartsWith("/util/login"))
                             return IdentityCookieScheme;          // Optimizely local login
 
                         // default challenge elsewhere -> Entra
-                        return AzureChallengeScheme;
+                        return SecurityConstants.AzureChallengeScheme;
                     };
                 });
 
@@ -60,7 +61,7 @@ namespace ChildFund.Web.Infrastructure.Security
                 o.DefaultScheme = "smart-auth";             // how to AUTHENTICATE requests
                 o.DefaultAuthenticateScheme = "smart-auth";
                 o.DefaultChallengeScheme = "smart-challenge"; // how to CHALLENGE when login is needed
-                o.DefaultSignInScheme = AzureCookieScheme;  // OIDC writes this cookie after login
+                o.DefaultSignInScheme = SecurityConstants.AzureCookieScheme;  // OIDC writes this cookie after login
             });
 
             return services;
